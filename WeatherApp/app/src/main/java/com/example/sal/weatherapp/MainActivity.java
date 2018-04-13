@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,15 +35,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    //Firebase information \/\/\/
-    private DatabaseReference mWeatherDatabase;
-
-    //Firebase testing stuff \/\/\/
-    private Button button_firebaseTest;
-    //Firebase testing stuff /\/\/\
-
-    //Firebase information /\/\/\
-
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -52,16 +44,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //Firebase information \/\/\/
-        mWeatherDatabase = FirebaseDatabase.getInstance().getReference();
-
-        //Firebase testing stuff \/\/\/
-        button_firebaseTest = (Button) findViewById(R.id.button_firebasetest);
-        button_firebaseTest.setOnClickListener(this);
-        //Firebase testing stuff /\/\/\
-
-        //Firebase information /\/\/\
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -74,13 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        fab.setOnClickListener(this);
 
     }
 
@@ -111,28 +87,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId())
         {
-            case R.id.button_firebasetest:
-                TestFirebase();
+            case R.id.fab:
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 break;
         }
-    }
-
-    public void TestFirebase(){
-        //Create Child
-        //Assign Values to Child
-
-        mWeatherDatabase.child("Test").setValue("Testing");
     }
 
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends Fragment implements View.OnClickListener{
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+
+        private DatabaseReference mWeatherDatabase;
 
         public PlaceholderFragment() {
         }
@@ -154,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
+            mWeatherDatabase = FirebaseDatabase.getInstance().getReference();
+
             switch (getArguments().getInt(ARG_SECTION_NUMBER))
             {
                 case 1:
@@ -161,16 +134,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
 
                 case 2:
-                rootView = inflater.inflate(R.layout.fragment_mapview, container, false);
-                break;
+                    rootView = inflater.inflate(R.layout.fragment_mapview, container, false);
+                    break;
 
                 case 3:
-                    rootView = inflater.inflate(R.layout.fragment_testfirebase, container, false);
+                    rootView = inflater.inflate(R.layout.fragment_firebasetest, container, false);
+
+                    Button button_firebaseSendTest = (Button) rootView.findViewById(R.id.button_testsend);
+                    Button button_firebaseGetTest = (Button) rootView.findViewById(R.id.button_testrecieve);
+
+                    button_firebaseSendTest.setOnClickListener(this);
+                    button_firebaseGetTest.setOnClickListener(this);
+
                     break;
             }
 
             return rootView;
         }
+
+        @Override
+        public void onClick(View view) {
+            switch(view.getId())
+            {
+                case R.id.button_testsend:
+                    SendTestFirebase();
+                    break;
+                case R.id.button_testrecieve:
+                    RecieveTestFirebase();
+                    break;
+            }
+        }
+
+        public void SendTestFirebase(){
+            Log.d("Made it", "To Send To Firebase");
+            mWeatherDatabase.child("Test").setValue("Testing");
+        }
+
+        public void RecieveTestFirebase() {
+            Log.d("Made it", "To Recieve To Firebase");
+        }
+
     }
 
     /**
