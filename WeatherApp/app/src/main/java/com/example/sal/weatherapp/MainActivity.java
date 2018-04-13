@@ -16,9 +16,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -30,6 +34,15 @@ public class MainActivity extends AppCompatActivity {
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
+    //Firebase information \/\/\/
+    private DatabaseReference mWeatherDatabase;
+
+    //Firebase testing stuff \/\/\/
+    private Button button_firebaseTest;
+    //Firebase testing stuff /\/\/\
+
+    //Firebase information /\/\/\
+
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -39,6 +52,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Firebase information \/\/\/
+        mWeatherDatabase = FirebaseDatabase.getInstance().getReference();
+
+        //Firebase testing stuff \/\/\/
+        button_firebaseTest = (Button) findViewById(R.id.button_firebasetest);
+        button_firebaseTest.setOnClickListener(this);
+        //Firebase testing stuff /\/\/\
+
+        //Firebase information /\/\/\
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -84,6 +107,23 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId())
+        {
+            case R.id.button_firebasetest:
+                TestFirebase();
+                break;
+        }
+    }
+
+    public void TestFirebase(){
+        //Create Child
+        //Assign Values to Child
+
+        mWeatherDatabase.child("Test").setValue("Testing");
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -121,7 +161,11 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case 2:
-                    rootView = inflater.inflate(R.layout.fragment_mapview, container, false);
+                rootView = inflater.inflate(R.layout.fragment_mapview, container, false);
+                break;
+
+                case 3:
+                    rootView = inflater.inflate(R.layout.fragment_testfirebase, container, false);
                     break;
             }
 
@@ -149,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             // Show 2 total pages.
-            return 2;
+            return 3;
         }
     }
 }
