@@ -27,7 +27,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -134,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         List<Double> latitudes = new ArrayList<>();
         List<Double> longitudes = new ArrayList<>();
         List<Double> temperatures = new ArrayList<>();
+        List<java.util.Date> times = new ArrayList<>();
         List<String> weatherConditions = new ArrayList<>();
 
         View rootView;
@@ -215,29 +218,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Double latitude = 9999.9999;
             Double longitude =  9999.9999;
             Double temperature =  9999.9999;
+            java.util.Date time = Calendar.getInstance().getTime();
             String weatherCondition = "n/a";
 
-            try
-            {
-                pressure = Double.valueOf(dataSnapshot.child("Barometer").getValue().toString());
-                latitude = Double.valueOf(dataSnapshot.child("Lat").getValue().toString());
-                longitude = Double.valueOf(dataSnapshot.child("Long").getValue().toString());
-                temperature = Double.valueOf(dataSnapshot.child("Temperature").getValue().toString());
-                weatherCondition = dataSnapshot.child("Weather").getValue().toString();
-            }
-            catch (NumberFormatException ex)
-            {
-                Log.d("Error", "firebase format error");
-            }
-            catch (NullPointerException ex)
-            {
-                Log.d("Error", "firebase Null error");
-            }
+            try {pressure = Double.valueOf(dataSnapshot.child("Barometer").getValue().toString());}
+            catch (Exception ex) {Log.d("Error", "firebase barometer error");}
+
+            try {latitude = Double.valueOf(dataSnapshot.child("Lat").getValue().toString());}
+            catch (Exception ex) {Log.d("Error", "firebase latitude error");}
+
+            try {longitude = Double.valueOf(dataSnapshot.child("Long").getValue().toString());}
+            catch (Exception ex) {Log.d("Error", "firebase longitude error");}
+
+            try {temperature = Double.valueOf(dataSnapshot.child("Temperature").getValue().toString());}
+            catch (Exception ex) {Log.d("Error", "firebase temperature error");}
+
+            try {time = Date.valueOf(dataSnapshot.child("Time").getValue().toString());}
+            catch (Exception ex) {Log.d("Error", "firebase time error");}
+
+            try {weatherCondition = dataSnapshot.child("Weather").getValue().toString();}
+            catch (Exception ex) {Log.d("Error", "firebase weather error");}
 
             pressures.add(pressure);
             latitudes.add(latitude);
             longitudes.add(longitude);
             temperatures.add(temperature);
+            times.add(time);
             weatherConditions.add(weatherCondition);
 
             Log.d("Weather Pins", "Below is the weather pin List");
@@ -248,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("Lat", ""+ latitudes.get(i));
                 Log.d("Long", ""+ longitudes.get(i));
                 Log.d("Temperature", ""+ temperatures.get(i));
+                Log.d("Time", ""+ times.get(i).toString());
                 Log.d("Weather Condition", weatherConditions.get(i));
             }
         }
@@ -260,6 +267,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mWeatherDatabase.child(testPinName).child("Lat").setValue("test");
             mWeatherDatabase.child(testPinName).child("Long").setValue("test");
             mWeatherDatabase.child(testPinName).child("Temperature").setValue("test");
+            mWeatherDatabase.child(testPinName).child("Time").setValue(Calendar.getInstance().getTime().toString());
             mWeatherDatabase.child(testPinName).child("Weather").setValue("test");
         }
 
