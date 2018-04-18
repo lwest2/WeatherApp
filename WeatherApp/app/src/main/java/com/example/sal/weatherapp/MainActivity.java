@@ -118,6 +118,8 @@ public class MainActivity extends AppCompatActivity {
             {
                 case 1:
                     rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+
                     break;
 
                 case 2:
