@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "424185695953",
+    "firebase_url": "https://weatherapp-sal.firebaseio.com",
+    "project_id": "weatherapp-sal",
+    "storage_bucket": "weatherapp-sal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424185695953:android:184eecf2f1b4841c",
+        "android_client_info": {
+          "package_name": "com.example.sal.weatherapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "424185695953-k8stacuc27v9p5b8v4hscgi9dtgqonpr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sal.weatherapp",
+            "certificate_hash": "c80be59833fdeba9664430ef6fbabb57fe3b3608"
+          }
+        },
+        {
+          "client_id": "424185695953-8cbp1u2hndqp7or6ae3df6fo2pjtf6t0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbTU1GRjtaFaE9xi2ygj68pnzWEG9VbQk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "424185695953-8cbp1u2hndqp7or6ae3df6fo2pjtf6t0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
