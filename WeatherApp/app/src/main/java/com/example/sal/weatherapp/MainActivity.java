@@ -141,6 +141,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         List<java.util.Date> times = new ArrayList<>();
         List<String> weatherConditions = new ArrayList<>();
 
+        int start = -1;
+        private String startname = "Start";
+
         View rootView;
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -173,11 +176,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     String pinKey = dataSnapshot.getKey();
 
-                    if (!(weatherPins.contains(pinKey))) {
+                    if ((!(weatherPins.contains(pinKey)))&&(!startname.equals(pinKey))) {
+                        EditStart(dataSnapshot);
+
                         weatherPins.add(pinKey);
                         updateLists(dataSnapshot);
                     }
 
+                    if (startname.equals(pinKey))
+                    {
+                        start = Integer.parseInt(dataSnapshot.getValue().toString());
+                    }
                 }
 
                 @Override
@@ -189,8 +198,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
                     String pinKey = dataSnapshot.getKey();
 
-                    if (weatherPins.contains(pinKey)) {
-                        weatherPins.remove(pinKey);
+                    if ((weatherPins.contains(pinKey))&&(!startname.equals(pinKey))) {
+                        EditStart(dataSnapshot);
+
+                        int place = weatherPins.indexOf(pinKey);
+                        weatherPins.remove(place);
+                        pressures.remove(place);
+                        latitudes.remove(place);
+                        longitudes.remove(place);
+                        temperatures.remove(place);
+                        times.remove(place);
+                        weatherConditions.remove(place);
+
                         updateLists(dataSnapshot);
                     }
                 }
@@ -209,6 +228,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return rootView;
         }
 
+        public void EditStart(DataSnapshot dataSnapshot) {
+            String[] splitString = dataSnapshot.getKey().split("n");
+            int newStart = Integer.parseInt(splitString[1]);
+
+            if ((newStart < start) || (start <= 0)) {
+                start = newStart;
+            }
+
+            mWeatherDatabase.child(startname).setValue(start);
+        }
+
         @Override
         public void onClick(View view) {
             switch(view.getId())
@@ -219,31 +249,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-        public void updateLists(DataSnapshot dataSnapshot)
-        {
+        public void updateLists(DataSnapshot dataSnapshot) {
             DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
 
             Double pressure = 9999.9999;
             Double latitude = 9999.9999;
-            Double longitude =  9999.9999;
-            Double temperature =  9999.9999;
+            Double longitude = 9999.9999;
+            Double temperature = 9999.9999;
 
             java.util.Date time = null;
             String weatherCondition = "n/a";
 
             Boolean outOfDate = true;
 
-            try {pressure = Double.valueOf(dataSnapshot.child("Barometer").getValue().toString());}
-            catch (Exception ex) {Log.d("Error", "firebase barometer error");}
+            try {
+                pressure = Double.valueOf(dataSnapshot.child("Barometer").getValue().toString());
+            } catch (Exception ex) {
+                Log.d("Error", "firebase barometer error");
+            }
 
-            try {latitude = Double.valueOf(dataSnapshot.child("Lat").getValue().toString());}
-            catch (Exception ex) {Log.d("Error", "firebase latitude error");}
+            try {
+                latitude = Double.valueOf(dataSnapshot.child("Lat").getValue().toString());
+            } catch (Exception ex) {
+                Log.d("Error", "firebase latitude error");
+            }
 
-            try {longitude = Double.valueOf(dataSnapshot.child("Long").getValue().toString());}
-            catch (Exception ex) {Log.d("Error", "firebase longitude error");}
+            try {
+                longitude = Double.valueOf(dataSnapshot.child("Long").getValue().toString());
+            } catch (Exception ex) {
+                Log.d("Error", "firebase longitude error");
+            }
 
-            try {temperature = Double.valueOf(dataSnapshot.child("Temperature").getValue().toString());}
-            catch (Exception ex) {Log.d("Error", "firebase temperature error");}
+            try {
+                temperature = Double.valueOf(dataSnapshot.child("Temperature").getValue().toString());
+            } catch (Exception ex) {
+                Log.d("Error", "firebase temperature error");
+            }
 
             try {
                 String dateString = dataSnapshot.child("Time").getValue().toString();
@@ -251,11 +292,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 //Check time to see if out of date
                 outOfDate = OutOfDate(time);
+            } catch (Exception ex) {
+                Log.d("Error", "firebase time error");
             }
-            catch (Exception ex) {Log.d("Error", "firebase time error");}
 
-            try {weatherCondition = dataSnapshot.child("Weather").getValue().toString();}
-            catch (Exception ex) {Log.d("Error", "firebase weather error");}
+            try {
+                weatherCondition = dataSnapshot.child("Weather").getValue().toString();
+            } catch (Exception ex) {
+                Log.d("Error", "firebase weather error");
+            }
 
             if (outOfDate == false) {
 
@@ -266,18 +311,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 times.add(time);
                 weatherConditions.add(weatherCondition);
 
-                Log.d("Weather Pins", "Below is the weather pin List for: "+ dataSnapshot.getKey());
-                Log.d("Weather Pin", weatherPins.get(weatherPins.size()-1));
-                Log.d("Pressure", "" + pressures.get(weatherPins.size()-1));
-                Log.d("Lat", "" + latitudes.get(weatherPins.size()-1));
-                Log.d("Long", "" + longitudes.get(weatherPins.size()-1));
-                Log.d("Temperature", "" + temperatures.get(weatherPins.size()-1));
-                Log.d("Time", "" + times.get(weatherPins.size()-1).toString());
-                Log.d("Weather Condition", weatherConditions.get(weatherPins.size()-1));
-            }
-            else if (outOfDate == true)
-            {
-                mWeatherDatabase.child(dataSnapshot.getKey()).removeValue();
+                Log.d("Weather Pins", "Below is the weather pin List for: " + dataSnapshot.getKey());
+                Log.d("Weather Pin", weatherPins.get(weatherPins.size() - 1));
+                Log.d("Pressure", "" + pressures.get(weatherPins.size() - 1));
+                Log.d("Lat", "" + latitudes.get(weatherPins.size() - 1));
+                Log.d("Long", "" + longitudes.get(weatherPins.size() - 1));
+                Log.d("Temperature", "" + temperatures.get(weatherPins.size() - 1));
+                Log.d("Time", "" + times.get(weatherPins.size() - 1).toString());
+                Log.d("Weather Condition", weatherConditions.get(weatherPins.size() - 1));
+            } else if (outOfDate == true) {
+                if (!startname.equals(dataSnapshot.getKey())) {
+                    mWeatherDatabase.child(dataSnapshot.getKey()).removeValue();
+                }
             }
         }
 
@@ -301,15 +346,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         public void SendFirebase(){
-            //int currentPin = mWeatherDatabase.child("NumPins");
-            String testPinName = "TestPin";
+            String pinName = "Pin";
 
-            mWeatherDatabase.child(testPinName).child("Time").setValue(Calendar.getInstance().getTime().toString());
-            mWeatherDatabase.child(testPinName).child("Barometer").setValue("test");
-            mWeatherDatabase.child(testPinName).child("Lat").setValue("test");
-            mWeatherDatabase.child(testPinName).child("Long").setValue("test");
-            mWeatherDatabase.child(testPinName).child("Temperature").setValue("test");
-            mWeatherDatabase.child(testPinName).child("Weather").setValue("test");
+            if (start <= 0)
+            {
+                pinName = pinName + weatherPins.size();
+            }
+            else
+            {
+                start = start - 1;
+                pinName = pinName + start;
+                mWeatherDatabase.child(startname).setValue(start);
+            }
+
+            Log.d("pinName", pinName);
+
+            mWeatherDatabase.child(pinName).child("Time").setValue(Calendar.getInstance().getTime().toString());
+            mWeatherDatabase.child(pinName).child("Barometer").setValue("test");
+            mWeatherDatabase.child(pinName).child("Lat").setValue("test");
+            mWeatherDatabase.child(pinName).child("Long").setValue("test");
+            mWeatherDatabase.child(pinName).child("Temperature").setValue("test");
+            mWeatherDatabase.child(pinName).child("Weather").setValue("test");
         }
 
     }
