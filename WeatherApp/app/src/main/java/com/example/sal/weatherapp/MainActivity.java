@@ -143,6 +143,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         int start = -1;
         private String startname = "Start";
+        int end = -1;
+        private String endname = "End";
+        private String childNameSE = "Adding";
 
         View rootView;
         @Override
@@ -176,16 +179,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     String pinKey = dataSnapshot.getKey();
 
-                    if ((!(weatherPins.contains(pinKey)))&&(!startname.equals(pinKey))) {
-                        EditStart(dataSnapshot);
+                    if ((!(weatherPins.contains(pinKey)))&&(!childNameSE.equals(pinKey))) {
+                        EditStartAndEnd(dataSnapshot);
 
                         weatherPins.add(pinKey);
                         updateLists(dataSnapshot);
                     }
 
-                    if (startname.equals(pinKey))
+                    if (childNameSE.equals(pinKey))
                     {
-                        start = Integer.parseInt(dataSnapshot.getValue().toString());
+                        start = Integer.parseInt(dataSnapshot.child(startname).getValue().toString());
+                        end = Integer.parseInt(dataSnapshot.child(endname).getValue().toString());
                     }
                 }
 
@@ -198,8 +202,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
                     String pinKey = dataSnapshot.getKey();
 
-                    if ((weatherPins.contains(pinKey))&&(!startname.equals(pinKey))) {
-                        EditStart(dataSnapshot);
+                    if ((weatherPins.contains(pinKey))&&(!childNameSE.equals(pinKey))) {
+                        EditStartAndEnd(dataSnapshot);
 
                         int place = weatherPins.indexOf(pinKey);
                         weatherPins.remove(place);
@@ -228,15 +232,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return rootView;
         }
 
-        public void EditStart(DataSnapshot dataSnapshot) {
+        public void EditStartAndEnd(DataSnapshot dataSnapshot) {
             String[] splitString = dataSnapshot.getKey().split("n");
-            int newStart = Integer.parseInt(splitString[1]);
+            int newPointer = Integer.parseInt(splitString[1]);
 
-            if ((newStart < start) || (start <= 0)) {
-                start = newStart;
+            if ((newPointer + 1) < start) {
+                    start = newPointer + 1;
+            }
+            else if ((newPointer < end) && (newPointer > start)) {
+                    end = newPointer;
             }
 
-            mWeatherDatabase.child(startname).setValue(start);
+            mWeatherDatabase.child(childNameSE).child(endname).setValue(end);
+            mWeatherDatabase.child(childNameSE).child(startname).setValue(start);
         }
 
         @Override
@@ -320,7 +328,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("Time", "" + times.get(weatherPins.size() - 1).toString());
                 Log.d("Weather Condition", weatherConditions.get(weatherPins.size() - 1));
             } else if (outOfDate == true) {
-                if (!startname.equals(dataSnapshot.getKey())) {
+                if (!childNameSE.equals(dataSnapshot.getKey())) {
                     mWeatherDatabase.child(dataSnapshot.getKey()).removeValue();
                 }
             }
@@ -348,15 +356,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void SendFirebase(){
             String pinName = "Pin";
 
-            if (start <= 0)
+            if (start == end)
             {
                 pinName = pinName + weatherPins.size();
             }
             else
             {
-                start = start - 1;
                 pinName = pinName + start;
-                mWeatherDatabase.child(startname).setValue(start);
+                start = start + 1;
+                mWeatherDatabase.child(childNameSE).child(startname).setValue(start);
             }
 
             Log.d("pinName", pinName);
