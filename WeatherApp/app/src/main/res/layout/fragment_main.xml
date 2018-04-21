@@ -153,7 +153,7 @@
         android:id="@+id/buttonGetLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="244dp"
+        android:layout_marginLeft="244dp"
         android:layout_marginTop="324dp"
         android:text="@string/get_location"
         app:layout_constraintLeft_toLeftOf="parent"

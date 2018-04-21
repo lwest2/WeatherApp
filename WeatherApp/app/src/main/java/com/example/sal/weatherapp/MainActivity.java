@@ -1,7 +1,20 @@
 package com.example.sal.weatherapp;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -10,13 +23,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -84,10 +103,25 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public static boolean hasPermissions(Context context, String... permissions)
+    {
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M && context != null && permissions != null)
+        {
+            for (String permission: permissions)
+            {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends Fragment implements View.OnClickListener {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -95,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         public PlaceholderFragment() {
+
         }
 
         /**
@@ -110,15 +145,49 @@ public class MainActivity extends AppCompatActivity {
         }
 
         View rootView;
+        private Button m_buttonGetTemperature;
+        private Button m_buttonGetPressure;
+        private Button m_buttonGetLocation;
+        private Button m_buttonSubmit;
+
+        private Spinner m_spinnerGetWeather;
+
+        private TextView m_textViewTemperatureOutput;
+        private TextView m_textViewPressureOutput;
+        private TextView m_textViewLatitudeOutput;
+        private TextView m_textViewLongitudeOutput;
+
+        private LocationManager m_locationManager;
+
+        private static final int REQUEST_LOCATION = 1;
+
+        @SuppressLint("MissingPermission")
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
-            switch (getArguments().getInt(ARG_SECTION_NUMBER))
-            {
+            switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1:
                     rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+                    m_buttonGetTemperature = (Button) rootView.findViewById(R.id.buttonGetTemparture);
+                    m_buttonGetPressure = (Button) rootView.findViewById(R.id.buttonGetPressure);
+                    m_buttonGetLocation = (Button) rootView.findViewById(R.id.buttonGetLocation);
+                    m_buttonSubmit = (Button) rootView.findViewById(R.id.buttonSubmit);
+
+                    m_spinnerGetWeather = (Spinner) rootView.findViewById(R.id.spinnerGetWeather);
+
+                    m_textViewTemperatureOutput = (TextView) rootView.findViewById(R.id.textViewTemperatureOutput);
+                    m_textViewPressureOutput = (TextView) rootView.findViewById(R.id.textViewPressureOutput);
+                    m_textViewLongitudeOutput = (TextView) rootView.findViewById(R.id.textViewLongitudeOutput);
+                    m_textViewLatitudeOutput = (TextView) rootView.findViewById(R.id.textViewLatitudeOutput);
+
+                    m_locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+                    m_buttonSubmit.setOnClickListener(this);
+                    m_buttonGetLocation.setOnClickListener(this);
+                    m_buttonGetPressure.setOnClickListener(this);
+                    m_buttonGetTemperature.setOnClickListener(this);
 
                     break;
 
@@ -128,6 +197,83 @@ public class MainActivity extends AppCompatActivity {
             }
 
             return rootView;
+        }
+
+        @Override
+        public void onClick(View view) {
+            int id = view.getId();
+
+            switch (id) {
+                case R.id.buttonGetLocation:
+                    // code to set location
+                    GetLocation();
+                    break;
+
+                case R.id.buttonGetTemparture:
+                    // code to set temperature
+                    GetTemperature();
+                    break;
+
+                case R.id.buttonGetPressure:
+                    // code to set pressure
+                    GetPressure();
+                    break;
+
+                case R.id.buttonSubmit:
+                    // code to submit
+                    Submit();
+                    break;
+            }
+
+        }
+
+
+        @SuppressLint("MissingPermission")
+        private void GetLocation() {
+            // check permissions
+            if(ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+            } else
+            {
+                Location location = m_locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+                if (location != null)
+                {
+                    double longitude = location.getLongitude();
+                    double latitude = location.getLatitude();
+
+                    m_textViewLongitudeOutput.setText(Double.toString(longitude));
+                    m_textViewLatitudeOutput.setText(Double.toString(latitude));
+                } else {
+                    m_textViewLongitudeOutput.setText("Unable to find location");
+                    m_textViewLatitudeOutput.setText("Unable to find location");
+                }
+            }
+        }
+
+        private void GetTemperature() {
+
+        }
+
+        private void GetPressure(){
+
+        }
+
+        private void Submit(){
+
+        }
+
+        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+        {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            switch (requestCode)
+            {
+                case REQUEST_LOCATION:
+                    GetLocation();
+                    break;
+            }
         }
     }
 
