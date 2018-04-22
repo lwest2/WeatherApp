@@ -6,6 +6,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -35,6 +39,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
+
+import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -121,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment implements View.OnClickListener {
+    public static class PlaceholderFragment extends Fragment implements View.OnClickListener, SensorEventListener {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -161,7 +167,12 @@ public class MainActivity extends AppCompatActivity {
 
         private static final int REQUEST_LOCATION = 1;
 
-        @SuppressLint("MissingPermission")
+        private SensorManager m_sensorManager;
+        private Sensor m_temperature;
+        private float m_ambientTemperature;
+        private Sensor m_pressure;
+        private float m_bioPressure;
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -183,6 +194,12 @@ public class MainActivity extends AppCompatActivity {
                     m_textViewLatitudeOutput = (TextView) rootView.findViewById(R.id.textViewLatitudeOutput);
 
                     m_locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                    m_sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+                    m_temperature = m_sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+                    m_pressure = m_sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+
+                    m_sensorManager.registerListener(this, m_temperature, SensorManager.SENSOR_DELAY_NORMAL);
+                    m_sensorManager.registerListener(this, m_pressure, SensorManager.SENSOR_DELAY_NORMAL);
 
                     m_buttonSubmit.setOnClickListener(this);
                     m_buttonGetLocation.setOnClickListener(this);
@@ -228,7 +245,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        @SuppressLint("MissingPermission")
         private void GetLocation() {
             // check permissions
             if(ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -246,23 +262,56 @@ public class MainActivity extends AppCompatActivity {
                     m_textViewLongitudeOutput.setText(Double.toString(longitude));
                     m_textViewLatitudeOutput.setText(Double.toString(latitude));
                 } else {
-                    m_textViewLongitudeOutput.setText("Unable to find location");
-                    m_textViewLatitudeOutput.setText("Unable to find location");
+                    m_textViewLongitudeOutput.setText(R.string.NoLongitude);
+                    m_textViewLatitudeOutput.setText(R.string.NoLatitude);
                 }
             }
         }
 
         private void GetTemperature() {
-
+            if (m_temperature != null)
+            {
+                double roundedNumber = Math.round(m_ambientTemperature * 100.0) / 100.0;
+                m_textViewTemperatureOutput.setText((Double.toString(roundedNumber)) + " " + getResources().getString(R.string.Celsius));
+            }
+            else
+            {
+                m_textViewTemperatureOutput.setText(R.string.NoTemperature);
+            }
         }
 
         private void GetPressure(){
-
+            if (m_pressure != null)
+            {
+                m_textViewPressureOutput.setText((Float.toString(m_bioPressure)) + " " + getResources().getString(R.string.mb));
+            }
+            else
+            {
+                m_textViewPressureOutput.setText(R.string.NoPressure);
+            }
         }
 
         private void Submit(){
+            String temperature_arr[] = m_textViewTemperatureOutput.getText().toString().split(" ");
+            String temperature = temperature_arr[0]; // number
+
+            String pressure_arr[] = m_textViewPressureOutput.getText().toString().split(" ");
+            String pressure = pressure_arr[0]; // number
+
+            String weatherCondition = m_spinnerGetWeather.getSelectedItem().toString();
+            String latitude = m_textViewLatitudeOutput.getText().toString();
+            String longitude = m_textViewLongitudeOutput.getText().toString();
+
+            m_textViewTemperatureOutput.setText(R.string._0);
+            m_textViewPressureOutput.setText(R.string._0);
+            m_spinnerGetWeather.setSelection(0);
+            m_textViewLatitudeOutput.setText(R.string._0);
+            m_textViewLongitudeOutput.setText(R.string._0);
+
+            Log.i("Output: ", temperature + " " + pressure + " " + weatherCondition + " " + latitude + " " + longitude);
 
         }
+
 
         public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
         {
@@ -274,6 +323,21 @@ public class MainActivity extends AppCompatActivity {
                     GetLocation();
                     break;
             }
+        }
+
+        @Override
+        public void onSensorChanged(SensorEvent sensorEvent) {
+            if (sensorEvent.sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE) {
+                m_ambientTemperature = sensorEvent.values[0];
+            }
+            if (sensorEvent.sensor.getType() == Sensor.TYPE_PRESSURE) {
+                m_bioPressure = sensorEvent.values[0];
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int i) {
+            // do something if accuracy changes
         }
     }
 
