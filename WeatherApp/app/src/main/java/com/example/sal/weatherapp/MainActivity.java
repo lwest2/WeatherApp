@@ -195,6 +195,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                    String pinKey = dataSnapshot.getKey();
+                    if (weatherPins.contains(pinKey)) {
+                        EditStartAndEnd(dataSnapshot);
+                    }
+
+                    if (childNameSE.equals(pinKey))
+                    {
+                        start = Integer.parseInt(dataSnapshot.child(startname).getValue().toString());
+                        end = Integer.parseInt(dataSnapshot.child(endname).getValue().toString());
+                    }
+
                     updateLists(dataSnapshot);
                 }
 
@@ -215,6 +227,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         weatherConditions.remove(place);
 
                         updateLists(dataSnapshot);
+                    }
+
+                    if (childNameSE.equals(pinKey))
+                    {
+                        start = Integer.parseInt(dataSnapshot.child(startname).getValue().toString());
+                        end = Integer.parseInt(dataSnapshot.child(endname).getValue().toString());
                     }
                 }
 
