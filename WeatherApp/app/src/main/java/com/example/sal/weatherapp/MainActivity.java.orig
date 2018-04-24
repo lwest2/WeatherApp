@@ -35,10 +35,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Button;
-import android.widget.Spinner;
+<<<<<<< HEAD
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -46,12 +45,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+=======
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
+
+import java.text.DecimalFormat;
+
+public class MainActivity extends AppCompatActivity {
+>>>>>>> origin/InputView
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -85,13 +93,7 @@ public class MainActivity extends AppCompatActivity{
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        fab.setOnClickListener(this);
 
     }
 
@@ -118,6 +120,16 @@ public class MainActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
+<<<<<<< HEAD
+    @Override
+    public void onClick(View view) {
+        switch (view.getId())
+        {
+            case R.id.fab:
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                break;
+        }
+=======
     public static boolean hasPermissions(Context context, String... permissions)
     {
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M && context != null && permissions != null)
@@ -131,12 +143,17 @@ public class MainActivity extends AppCompatActivity{
             }
         }
         return true;
+>>>>>>> origin/InputView
     }
 
     /**
      * A placeholder fragment containing a simple view.
      */
+<<<<<<< HEAD
+    public static class PlaceholderFragment extends Fragment implements View.OnClickListener{
+=======
     public static class PlaceholderFragment extends Fragment implements View.OnClickListener, SensorEventListener {
+>>>>>>> origin/InputView
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -196,10 +213,14 @@ public class MainActivity extends AppCompatActivity{
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
+<<<<<<< HEAD
             mWeatherDatabase = FirebaseDatabase.getInstance().getReference();
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER))
             {
+=======
+            switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
+>>>>>>> origin/InputView
                 case 1:
                     rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -282,29 +303,11 @@ public class MainActivity extends AppCompatActivity{
 
         @Override
         public void onClick(View view) {
+<<<<<<< HEAD
             switch(view.getId())
             {
                 case R.id.button_testsend:
                     SendFirebase();
-                    break;
-		        case R.id.buttonGetLocation:
-                    // code to set location
-                    GetLocation();
-                    break;
-
-                case R.id.buttonGetTemparture:
-                    // code to set temperature
-                    GetTemperature();
-                    break;
-
-                case R.id.buttonGetPressure:
-                    // code to set pressure
-                    GetPressure();
-                    break;
-
-                case R.id.buttonSubmit:
-                    // code to submit
-                    Submit();
                     break;
             }
         }
@@ -352,18 +355,46 @@ public class MainActivity extends AppCompatActivity{
             }
         }
 
-        public void SendFirebase(String pressureString, String latString, String longString, String tempString, String conditionString){
+        public void SendFirebase(){
             //int currentPin = mWeatherDatabase.child("NumPins");
             String testPinName = "TestPin";
 
-            mWeatherDatabase.child(testPinName).child("Barometer").setValue(pressureString);
-            mWeatherDatabase.child(testPinName).child("Lat").setValue(latString);
-            mWeatherDatabase.child(testPinName).child("Long").setValue(longString);
-            mWeatherDatabase.child(testPinName).child("Temperature").setValue(tempString);
-            mWeatherDatabase.child(testPinName).child("Weather").setValue(conditionString);
+            mWeatherDatabase.child(testPinName).child("Barometer").setValue("test");
+            mWeatherDatabase.child(testPinName).child("Lat").setValue("test");
+            mWeatherDatabase.child(testPinName).child("Long").setValue("test");
+            mWeatherDatabase.child(testPinName).child("Temperature").setValue("test");
+            mWeatherDatabase.child(testPinName).child("Weather").setValue("test");
         }
 
-	    private void GetLocation() {
+=======
+            int id = view.getId();
+
+            switch (id) {
+                case R.id.buttonGetLocation:
+                    // code to set location
+                    GetLocation();
+                    break;
+
+                case R.id.buttonGetTemparture:
+                    // code to set temperature
+                    GetTemperature();
+                    break;
+
+                case R.id.buttonGetPressure:
+                    // code to set pressure
+                    GetPressure();
+                    break;
+
+                case R.id.buttonSubmit:
+                    // code to submit
+                    Submit();
+                    break;
+            }
+
+        }
+
+
+        private void GetLocation() {
             // check permissions
             if(ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -427,8 +458,9 @@ public class MainActivity extends AppCompatActivity{
             m_textViewLongitudeOutput.setText(R.string._0);
 
             Log.i("Output: ", temperature + " " + pressure + " " + weatherCondition + " " + latitude + " " + longitude);
-            SendFirebase(pressure, latitude, longitude, temperature, weatherCondition);
+
         }
+
 
         public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
         {
@@ -456,6 +488,7 @@ public class MainActivity extends AppCompatActivity{
         public void onAccuracyChanged(Sensor sensor, int i) {
             // do something if accuracy changes
         }
+>>>>>>> origin/InputView
     }
 
     /**

@@ -4,7 +4,6 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="input_view">Input View</string>
     <string name="map_view">Map View</string>
-    <string name="test_firebase">Test Firebase</string>
     <string name="temperature">Temperature</string>
     <string name="barometric_pressure">Barometric Pressure</string>
     <string name="weather_conditions">Weather Conditions</string>
