@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">WeatherApp</string>
-    <string name="action_settings">Settings</string>
-    <string name="section_format">Hello World from section: %1$d</string>
-    <string name="input_view">Input View</string>
-    <string name="map_view">Map View</string>
-</resources>

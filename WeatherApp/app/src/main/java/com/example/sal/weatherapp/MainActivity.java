@@ -14,6 +14,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Debug;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -260,23 +261,20 @@ public class MainActivity extends AppCompatActivity{
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     String pinKey = dataSnapshot.getKey();
 
-                    if ((!(weatherPins.contains(pinKey)))&&(!childNameSE.equals(pinKey))) {
-                        EditStartAndEnd(dataSnapshot);
-
-                        weatherPins.add(pinKey);
-                        updateLists(dataSnapshot);
-                    }
-
                     if (childNameSE.equals(pinKey))
                     {
                         start = Integer.parseInt(dataSnapshot.child(startname).getValue().toString());
                         end = Integer.parseInt(dataSnapshot.child(endname).getValue().toString());
                     }
+
+                    if ((!(weatherPins.contains(pinKey)))&&(!childNameSE.equals(pinKey))) {
+                        EditStartAndEnd(dataSnapshot);
+                        updateLists(dataSnapshot);
+                    }
                 }
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    updateLists(dataSnapshot);
                 }
 
                 @Override
@@ -286,6 +284,8 @@ public class MainActivity extends AppCompatActivity{
                     if ((weatherPins.contains(pinKey))&&(!childNameSE.equals(pinKey))) {
                         EditStartAndEnd(dataSnapshot);
 
+                        Log.d("Look at me", pinKey);
+
                         int place = weatherPins.indexOf(pinKey);
                         weatherPins.remove(place);
                         pressures.remove(place);
@@ -294,9 +294,12 @@ public class MainActivity extends AppCompatActivity{
                         temperatures.remove(place);
                         times.remove(place);
                         weatherConditions.remove(place);
+                    }
 
+                    if (((!weatherPins.contains(pinKey)))&&(!childNameSE.equals(pinKey))) {
                         updateLists(dataSnapshot);
                     }
+
                 }
 
                 @Override
@@ -412,6 +415,7 @@ public class MainActivity extends AppCompatActivity{
 
             if (outOfDate == false) {
 
+                weatherPins.add(dataSnapshot.getKey());
                 pressures.add(pressure);
                 latitudes.add(latitude);
                 longitudes.add(longitude);
@@ -468,6 +472,7 @@ public class MainActivity extends AppCompatActivity{
                 mWeatherDatabase.child(childNameSE).child(startname).setValue(start);
             }
 
+            mWeatherDatabase.child(pinName).child("Time").setValue(Calendar.getInstance().getTime().toString());
             mWeatherDatabase.child(pinName).child("Barometer").setValue(pressureString);
             mWeatherDatabase.child(pinName).child("Lat").setValue(latString);
             mWeatherDatabase.child(pinName).child("Long").setValue(longString);
