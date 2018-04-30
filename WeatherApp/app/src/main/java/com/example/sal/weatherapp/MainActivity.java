@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity{
                     break;
 
                 case 2:
-                    rootView = inflater.inflate(R.layout.fragment_mapview, container, false);
+                    rootView = inflater.inflate(R.layout.activity_maps, container, false);
                     break;
 
                 case 3:
