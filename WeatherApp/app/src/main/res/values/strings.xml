@@ -22,6 +22,8 @@
     <string name="NoLongitude">Unable to find location</string>
     <string name="NoLatitude">Unable to find location</string>
     <string name="mb">mb</string>
+    <string name="upload_and_view_local_weather">Upload and view local weather.</string>
+    <string name="weather_watch">Weather Watch</string>
     <string-array name="weather_array">
         <item>Sunny</item>
         <item>Cloudy</item>
