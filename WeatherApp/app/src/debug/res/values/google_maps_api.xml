@@ -1,7 +1,5 @@
 <resources>
     <!--
-    TODO: Before you run your application, you need a Google Maps API key.
-
     To get one, follow this link, follow the directions and press "Create" at the end:
 
     https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=C8:0B:E5:98:33:FD:EB:A9:66:44:30:EF:6F:BA:BB:57:FE:3B:36:08%3Bcom.example.sal.weatherapp
