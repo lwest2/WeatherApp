@@ -204,6 +204,8 @@ public class MainActivity extends AppCompatActivity{
         private Sensor m_pressure;
         private float m_bioPressure;
 
+        private java.util.Date lastUpload = null;
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -472,7 +474,8 @@ public class MainActivity extends AppCompatActivity{
                 mWeatherDatabase.child(childNameSE).child(startname).setValue(start);
             }
 
-            mWeatherDatabase.child(pinName).child("Time").setValue(Calendar.getInstance().getTime().toString());
+            lastUpload = Calendar.getInstance().getTime();
+            mWeatherDatabase.child(pinName).child("Time").setValue(lastUpload.toString());
             mWeatherDatabase.child(pinName).child("Barometer").setValue(pressureString);
             mWeatherDatabase.child(pinName).child("Lat").setValue(latString);
             mWeatherDatabase.child(pinName).child("Long").setValue(longString);
@@ -526,25 +529,49 @@ public class MainActivity extends AppCompatActivity{
             }
         }
 
+        //60000 = 1 minute
         private void Submit(){
-            String temperature_arr[] = m_textViewTemperatureOutput.getText().toString().split(" ");
-            String temperature = temperature_arr[0]; // number
 
-            String pressure_arr[] = m_textViewPressureOutput.getText().toString().split(" ");
-            String pressure = pressure_arr[0]; // number
+            boolean outOfDate = true;
+            long timer = 60000;
 
-            String weatherCondition = m_spinnerGetWeather.getSelectedItem().toString();
-            String latitude = m_textViewLatitudeOutput.getText().toString();
-            String longitude = m_textViewLongitudeOutput.getText().toString();
+            if (lastUpload != null) {
+                java.util.Date currentTime = Calendar.getInstance().getTime();
+                Long difference = currentTime.getTime() - lastUpload.getTime();
+                if (difference < timer)
+                {
+                    outOfDate = false;
+                }
+            }
+            else
+            {
+                outOfDate = true;
+            }
 
-            m_textViewTemperatureOutput.setText(R.string._0);
-            m_textViewPressureOutput.setText(R.string._0);
-            m_spinnerGetWeather.setSelection(0);
-            m_textViewLatitudeOutput.setText(R.string._0);
-            m_textViewLongitudeOutput.setText(R.string._0);
+            if (outOfDate == true) {
+                String temperature_arr[] = m_textViewTemperatureOutput.getText().toString().split(" ");
+                String temperature = temperature_arr[0]; // number
 
-            Log.i("Output: ", temperature + " " + pressure + " " + weatherCondition + " " + latitude + " " + longitude);
-            SendFirebase(pressure, latitude, longitude, temperature, weatherCondition);
+                String pressure_arr[] = m_textViewPressureOutput.getText().toString().split(" ");
+                String pressure = pressure_arr[0]; // number
+
+                String weatherCondition = m_spinnerGetWeather.getSelectedItem().toString();
+                String latitude = m_textViewLatitudeOutput.getText().toString();
+                String longitude = m_textViewLongitudeOutput.getText().toString();
+
+                m_textViewTemperatureOutput.setText(R.string._0);
+                m_textViewPressureOutput.setText(R.string._0);
+                m_spinnerGetWeather.setSelection(0);
+                m_textViewLatitudeOutput.setText(R.string._0);
+                m_textViewLongitudeOutput.setText(R.string._0);
+
+                Log.i("Output: ", temperature + " " + pressure + " " + weatherCondition + " " + latitude + " " + longitude);
+                SendFirebase(pressure, latitude, longitude, temperature, weatherCondition);
+            }
+            else
+            {
+                Log.i("Can't Upload","Timer");
+            }
         }
 
         public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
