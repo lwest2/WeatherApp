@@ -24,7 +24,9 @@
     <string name="mb">mb</string>
     <string name="upload_and_view_local_weather">Upload and view local weather.</string>
     <string name="weather_watch">Weather Watch</string>
+    <string name="upload_and_view_your_local_weather">Upload and view your local weather.</string>
     <string-array name="weather_array">
+        <item></item>
         <item>Sunny</item>
         <item>Cloudy</item>
         <item>Windy</item>
