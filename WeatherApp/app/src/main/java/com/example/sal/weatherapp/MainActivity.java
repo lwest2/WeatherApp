@@ -186,6 +186,7 @@ public class MainActivity extends AppCompatActivity{
         private Button m_buttonGetPressure;
         private Button m_buttonGetLocation;
         private Button m_buttonSubmit;
+        private Button m_buttonGetData;
 
         private Spinner m_spinnerGetWeather;
 
@@ -215,10 +216,13 @@ public class MainActivity extends AppCompatActivity{
                 case 1:
                     rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+                    /*
                     m_buttonGetTemperature = (Button) rootView.findViewById(R.id.buttonGetTemparture);
                     m_buttonGetPressure = (Button) rootView.findViewById(R.id.buttonGetPressure);
                     m_buttonGetLocation = (Button) rootView.findViewById(R.id.buttonGetLocation);
+                    */
                     m_buttonSubmit = (Button) rootView.findViewById(R.id.buttonSubmit);
+                    m_buttonGetData = (Button) rootView.findViewById(R.id.getData);
 
                     m_spinnerGetWeather = (Spinner) rootView.findViewById(R.id.spinnerGetWeather);
 
@@ -235,11 +239,13 @@ public class MainActivity extends AppCompatActivity{
                     m_sensorManager.registerListener(this, m_temperature, SensorManager.SENSOR_DELAY_NORMAL);
                     m_sensorManager.registerListener(this, m_pressure, SensorManager.SENSOR_DELAY_NORMAL);
 
+                    m_buttonGetData.setOnClickListener(this);
                     m_buttonSubmit.setOnClickListener(this);
+                    /*
                     m_buttonGetLocation.setOnClickListener(this);
                     m_buttonGetPressure.setOnClickListener(this);
                     m_buttonGetTemperature.setOnClickListener(this);
-
+                    */
                     break;
 
                 case 2:
@@ -338,6 +344,7 @@ public class MainActivity extends AppCompatActivity{
                 case R.id.button_testsend:
                     Log.d("Test Send Button", "Un-needed");
                     break;
+                    /*
 		        case R.id.buttonGetLocation:
                     // code to set location
                     GetLocation();
@@ -352,10 +359,17 @@ public class MainActivity extends AppCompatActivity{
                     // code to set pressure
                     GetPressure();
                     break;
+                    */
 
                 case R.id.buttonSubmit:
                     // code to submit
                     Submit();
+                    break;
+
+                case R.id.getData:
+                    GetLocation();
+                    GetTemperature();
+                    GetPressure();
                     break;
             }
         }
