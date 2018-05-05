@@ -17,7 +17,7 @@
     </style>
 
     <style name="spinnerItemStyle">
-        <item name="android:textColor">#757575</item>
+        <item name="android:textColor">#def2f3</item>
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">@font/maintext</item>
         <item name="android:textAlignment">center</item>

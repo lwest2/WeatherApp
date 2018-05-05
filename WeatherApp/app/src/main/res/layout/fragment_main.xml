@@ -15,20 +15,20 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#f2f2f2"
+            android:background="#589ba4"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="8dp"
-                android:background="#0D5270"
+                android:background="#24454c"
                 android:orientation="horizontal" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
-                android:background="#176B8F"
+                android:background="#1093a7"
                 android:orientation="horizontal">
 
                 <TextView
@@ -40,7 +40,7 @@
                     android:layout_marginVertical="10dp"
                     android:fontFamily="@font/maintext"
                     android:text="@string/weather_watch"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#def2f3"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -54,7 +54,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:background="#176B8F"
+                android:background="#1093a7"
                 android:orientation="horizontal">
 
                 <TextView
@@ -66,7 +66,7 @@
                     android:layout_marginVertical="0dp"
                     android:fontFamily="@font/maintext"
                     android:text="@string/upload_and_view_your_local_weather"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#def2f3"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -90,12 +90,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_rowWeight="1"
-                    app:cardBackgroundColor="#ffffff"
-                    app:cardCornerRadius="5dp"
+                    app:cardBackgroundColor="#24454c"
                     app:cardElevation="8dp">
 
                     <LinearLayout
@@ -113,7 +110,7 @@
                             android:fontFamily="@font/maintext"
                             android:gravity="center_horizontal"
                             android:text="@string/temperature"
-                            android:textColor="#212121"
+                            android:textColor="#def2f3"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -124,7 +121,7 @@
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="#BDBDBD" />
+                            android:background="#def2f3" />
 
                         <TextView
                             android:id="@+id/textViewTemperatureOutput"
@@ -136,12 +133,20 @@
                             android:gravity="center_horizontal"
                             android:paddingTop="10dp"
                             android:text="@string/n_a"
-                            android:textColor="#757575"
+                            android:textColor="#def2f3"
                             android:textSize="30sp"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toTopOf="@+id/constraintLayout"
                             tools:layout_constraintLeft_creator="1"
-                            tools:layout_constraintTop_creator="1" />
+                            tools:layout_constraintTop_creator="1"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="70dp"
+                        android:src="@drawable/temperature"
+                        android:layout_marginBottom="5dp"
+                        android:layout_gravity="center"
+                        />
 
 
                     </LinearLayout>
@@ -152,12 +157,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="4dp"
                     android:layout_rowWeight="1"
-                    app:cardBackgroundColor="#ffffff"
-                    app:cardCornerRadius="5dp"
+                    app:cardBackgroundColor="#24454c"
                     app:cardElevation="8dp">
 
 
@@ -177,7 +179,7 @@
                             android:fontFamily="@font/maintext"
                             android:gravity="center_horizontal"
                             android:text="@string/barometric_pressure"
-                            android:textColor="#212121"
+                            android:textColor="#def2f3"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -188,7 +190,7 @@
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="#BDBDBD" />
+                            android:background="#def2f3" />
 
                         <TextView
                             android:id="@+id/textViewPressureOutput"
@@ -200,13 +202,21 @@
                             android:gravity="center_horizontal"
                             android:paddingTop="10dp"
                             android:text="@string/n_a"
-                            android:textColor="#757575"
+                            android:textColor="#def2f3"
                             android:textSize="30sp"
                             android:textStyle=""
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toTopOf="@+id/constraintLayout"
                             tools:layout_constraintLeft_creator="1"
                             tools:layout_constraintTop_creator="1" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="70dp"
+                            android:src="@drawable/pressure"
+                            android:layout_marginBottom="5dp"
+                            android:layout_gravity="center"
+                            />
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
@@ -215,13 +225,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginTop="8dp"
                     android:layout_rowWeight="1"
-                    app:cardBackgroundColor="#ffffff"
-                    app:cardCornerRadius="5dp"
+                    app:cardBackgroundColor="#24454c"
                     app:cardElevation="8dp">
 
                     <LinearLayout
@@ -240,7 +247,7 @@
                             android:fontFamily="@font/maintext"
                             android:gravity="center_horizontal"
                             android:text="@string/weather_conditions"
-                            android:textColor="#212121"
+                            android:textColor="#def2f3"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -251,16 +258,18 @@
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="#BDBDBD" />
+                            android:background="#def2f3" />
 
                         <Spinner
                             android:id="@+id/spinnerGetWeather"
+                            android:backgroundTint="#def2f3"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="10dp"
                             android:layout_marginTop="10dp"
                             android:entries="@array/weather_array"
                             android:textColor="#212121"
+                            android:popupBackground="#24454c"
                             android:textSize="14sp"
                             android:theme="@style/spinnerItemStyle"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -268,7 +277,14 @@
                             tools:layout_constraintLeft_creator="1"
                             tools:layout_constraintTop_creator="1" />
 
-
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="70dp"
+                            android:src="@drawable/weather"
+                            android:layout_marginTop="73dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_gravity="center"
+                            />
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
@@ -277,13 +293,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="8dp"
                     android:layout_rowWeight="1"
-                    app:cardBackgroundColor="#ffffff"
-                    app:cardCornerRadius="5dp"
+                    app:cardBackgroundColor="#24454c"
                     app:cardElevation="8dp">
 
                     <LinearLayout
@@ -302,7 +315,7 @@
                             android:fontFamily="@font/maintext"
                             android:gravity="center_horizontal"
                             android:text="@string/location"
-                            android:textColor="#212121"
+                            android:textColor="#def2f3"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -313,7 +326,7 @@
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="#BDBDBD" />
+                            android:background="#def2f3" />
 
                         <TextView
                             android:id="@+id/textViewLatitude"
@@ -325,7 +338,7 @@
                             android:gravity="center_horizontal"
                             android:paddingTop="10dp"
                             android:text="@string/latitude"
-                            android:textColor="#212121"
+                            android:textColor="#def2f3"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -343,7 +356,7 @@
                             android:fontFamily="@font/maintext"
                             android:gravity="center_horizontal"
                             android:text="@string/n_a"
-                            android:textColor="#757575"
+                            android:textColor="#def2f3"
                             android:textSize="14sp"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toTopOf="@+id/constraintLayout"
@@ -359,7 +372,7 @@
                             android:fontFamily="@font/maintext"
                             android:gravity="center_horizontal"
                             android:text="@string/longitude"
-                            android:textColor="#212121"
+                            android:textColor="#def2f3"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             app:layout_constraintLeft_toLeftOf="parent"
@@ -376,13 +389,19 @@
                             android:fontFamily="@font/maintext"
                             android:gravity="center_horizontal"
                             android:text="@string/n_a"
-                            android:textColor="#757575"
+                            android:textColor="#def2f3"
                             android:textSize="14sp"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toTopOf="@+id/constraintLayout"
                             tools:layout_constraintLeft_creator="1"
                             tools:layout_constraintTop_creator="1" />
-
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="70dp"
+                            android:src="@drawable/location"
+                            android:layout_marginBottom="5dp"
+                            android:layout_gravity="center"
+                            />
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
@@ -391,8 +410,8 @@
             </GridLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:background="#176B8F"
+                    android:layout_height="wrap_content"
+                    android:background="#1093a7"
                     android:orientation="horizontal"
                     >
 
@@ -402,16 +421,14 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:background="@drawable/roundedbutton"
-                        android:textColor="#ffffff"
+                        android:textColor="#def2f3"
                         android:text="@string/get_data"
+                        android:layout_marginRight="1dp"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/constraintLayout"
                         tools:layout_constraintLeft_creator="1"
                         tools:layout_constraintTop_creator="1"
                         android:layout_weight="1"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="10dp"
                         android:fontFamily="@font/maintext"
                         android:textStyle="bold"
                         android:textSize="16sp"
@@ -423,16 +440,14 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:background="@drawable/roundedbutton"
-                        android:textColor="#ffffff"
+                        android:textColor="#def2f3"
                         android:text="@string/upload"
+                        android:layout_marginLeft="1dp"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/constraintLayout"
                         tools:layout_constraintLeft_creator="1"
                         tools:layout_constraintTop_creator="1"
                         android:layout_weight="1"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginTop="10dp"
                         android:fontFamily="@font/maintext"
                         android:textStyle="bold"
                         android:textSize="16sp"
@@ -440,6 +455,32 @@
 
 
                 </LinearLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="#1093a7">
+
+    <TextView
+        android:id="@+id/textViewFooter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:fontFamily="@font/maintext"
+        android:gravity="center"
+        android:text="Copyright © 2018 Weather Watch"
+        android:textColor="#def2f3"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/constraintLayout"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintTop_creator="1" />
+</LinearLayout>
+
             </LinearLayout>
+
 </ScrollView>
 </android.support.constraint.ConstraintLayout>
