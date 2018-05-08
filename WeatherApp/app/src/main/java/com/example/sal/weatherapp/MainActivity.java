@@ -40,6 +40,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
+
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -56,7 +57,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -123,14 +124,10 @@ public class MainActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    public static boolean hasPermissions(Context context, String... permissions)
-    {
-        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M && context != null && permissions != null)
-        {
-            for (String permission: permissions)
-            {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED)
-                {
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                     return false;
                 }
             }
@@ -196,6 +193,8 @@ public class MainActivity extends AppCompatActivity{
         private TextView m_textViewLongitudeOutput;
 
         private LocationManager m_locationManager;
+        private double latitudeGetLoc;
+        private double longitudeGetLoc;
 
         private static final int REQUEST_LOCATION = 1;
 
@@ -211,8 +210,7 @@ public class MainActivity extends AppCompatActivity{
 
             mWeatherDatabase = FirebaseDatabase.getInstance().getReference();
 
-            switch (getArguments().getInt(ARG_SECTION_NUMBER))
-            {
+            switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1:
                     rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -238,6 +236,29 @@ public class MainActivity extends AppCompatActivity{
 
                     m_sensorManager.registerListener(this, m_temperature, SensorManager.SENSOR_DELAY_NORMAL);
                     m_sensorManager.registerListener(this, m_pressure, SensorManager.SENSOR_DELAY_NORMAL);
+                    LocationListener locationListener = new LocationListener() {
+                        @Override
+                        public void onLocationChanged(Location location) {
+                            longitudeGetLoc = location.getLongitude();
+                            latitudeGetLoc = location.getLatitude();
+                        }
+
+                        @Override
+                        public void onStatusChanged(String s, int i, Bundle bundle) { }
+
+                        @Override
+                        public void onProviderEnabled(String s) { }
+
+                        @Override
+                        public void onProviderDisabled(String s) { }
+                    };
+
+                    if(ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                            && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+                    } else {
+                        m_locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, locationListener);
+                    }
 
                     m_buttonGetData.setOnClickListener(this);
                     m_buttonSubmit.setOnClickListener(this);
@@ -363,7 +384,30 @@ public class MainActivity extends AppCompatActivity{
 
                 case R.id.buttonSubmit:
                     // code to submit
-                    Submit();
+                    // POPUP : ARE YOU SURE? Y / N?
+
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            switch(i)
+                            {
+                                case DialogInterface.BUTTON_NEGATIVE:
+
+                                    break;
+
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    Submit();
+                                    break;
+                            }
+                        }
+                    };
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("Are you sure you want to submit your weather report?")
+                            .setPositiveButton("Yes", dialogClickListener)
+                            .setNegativeButton("No", dialogClickListener);
+                    builder.create();
+                    builder.show();
                     break;
 
                 case R.id.getData:
@@ -505,11 +549,11 @@ public class MainActivity extends AppCompatActivity{
 
                 if (location != null)
                 {
-                    double longitude = location.getLongitude();
-                    double latitude = location.getLatitude();
+                    longitudeGetLoc = location.getLongitude();
+                    latitudeGetLoc = location.getLatitude();
 
-                    m_textViewLongitudeOutput.setText(Double.toString(longitude));
-                    m_textViewLatitudeOutput.setText(Double.toString(latitude));
+                    m_textViewLongitudeOutput.setText(Double.toString(longitudeGetLoc));
+                    m_textViewLatitudeOutput.setText(Double.toString(latitudeGetLoc));
                 } else {
                     m_textViewLongitudeOutput.setText(R.string.NoLongitude);
                     m_textViewLatitudeOutput.setText(R.string.NoLatitude);
@@ -551,14 +595,29 @@ public class MainActivity extends AppCompatActivity{
             String latitude = m_textViewLatitudeOutput.getText().toString();
             String longitude = m_textViewLongitudeOutput.getText().toString();
 
-            m_textViewTemperatureOutput.setText(R.string._0);
-            m_textViewPressureOutput.setText(R.string._0);
+            m_textViewTemperatureOutput.setText(getResources().getString(R.string.n_a));
+            m_textViewPressureOutput.setText(getResources().getString(R.string.n_a));
             m_spinnerGetWeather.setSelection(0);
-            m_textViewLatitudeOutput.setText(R.string._0);
-            m_textViewLongitudeOutput.setText(R.string._0);
+            m_textViewLatitudeOutput.setText(getResources().getString(R.string.n_a));
+            m_textViewLongitudeOutput.setText(getResources().getString(R.string.n_a));
 
             Log.i("Output: ", temperature + " " + pressure + " " + weatherCondition + " " + latitude + " " + longitude);
-            SendFirebase(pressure, latitude, longitude, temperature, weatherCondition);
+            if (!weatherCondition.equalsIgnoreCase("") && !longitude.equalsIgnoreCase("Unable to find location") && !latitude.equalsIgnoreCase("Unable to find location")) {
+                SendFirebase(pressure, latitude, longitude, temperature, weatherCondition);
+            } else
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Missing Data.")
+                        .setMessage("Requires at least weather condition and location to submit.")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        });
+                builder.create();
+                builder.show();
+            }
         }
 
         public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
