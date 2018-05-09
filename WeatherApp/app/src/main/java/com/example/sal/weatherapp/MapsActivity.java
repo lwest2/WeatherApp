@@ -9,7 +9,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -18,6 +21,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GPSTracker gpsTracker;
     private Location mLocation;
     double latitude, longitude;
+    static MapsActivity instance;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +39,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        instance = this;
+    }
+
+    public static MapsActivity getInstance()
+    {
+        return instance;
     }
 
 
@@ -52,8 +64,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng currentPosition = new LatLng(latitude, longitude);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPosition));
     }
+
+    public Marker AddMapMarker(double _lat, double _long, double _pressure, double _temp, String _condition, String _time)
+    {
+        Marker returnMarker = null;
+
+        if ((_temp == 9999.9999) && (_pressure == 9999.9999))
+        {
+            returnMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).snippet("Weather Condition: " + _condition).snippet("Time: " + _time));
+        }
+        else {
+            if (_temp == 9999.9999) {
+                returnMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).snippet("Weather Condition: " + _condition).snippet("Pressure: " + _pressure).snippet("Time: " + _time));
+            } else if (_pressure == 9999.9999){
+                returnMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).snippet("Weather Condition: " + _condition).snippet("Temperature: " + _temp).snippet("Time: " + _time));
+            }
+            else
+            {
+                returnMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).snippet("Weather Condition: " + _condition).snippet("Temperature: " + _temp).snippet("Pressure: " + _pressure).snippet("Time: " + _time));
+            }
+        }
+
+        return returnMarker;
+    }
+
 }
