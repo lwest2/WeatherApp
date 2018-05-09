@@ -604,6 +604,17 @@ public class MainActivity extends AppCompatActivity {
             Log.i("Output: ", temperature + " " + pressure + " " + weatherCondition + " " + latitude + " " + longitude);
             if (!weatherCondition.equalsIgnoreCase("") && !longitude.equalsIgnoreCase("Unable to find location") && !latitude.equalsIgnoreCase("Unable to find location")) {
                 SendFirebase(pressure, latitude, longitude, temperature, weatherCondition);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Uploaded.")
+                        .setMessage("Your weather report has been submitted.")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        });
+                builder.create();
+                builder.show();
             } else
             {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
