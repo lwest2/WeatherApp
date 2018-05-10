@@ -2,11 +2,9 @@ package com.example.sal.weatherapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -42,8 +40,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
-
-import com.google.android.gms.maps.model.Marker;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -59,7 +55,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -173,8 +168,12 @@ public class MainActivity extends AppCompatActivity{
 
         //Below will be the collection of weather pins
         List<String> weatherPins = new ArrayList<>();
+        List<Double> pressures = new ArrayList<>();
+        List<Double> latitudes = new ArrayList<>();
+        List<Double> longitudes = new ArrayList<>();
+        List<Double> temperatures = new ArrayList<>();
         List<java.util.Date> times = new ArrayList<>();
-        List<Marker> mapMarkers = new ArrayList<>();
+        List<String> weatherConditions = new ArrayList<>();
 
         int start = -1;
         private String startname = "Start";
@@ -285,13 +284,16 @@ public class MainActivity extends AppCompatActivity{
                     if ((weatherPins.contains(pinKey))&&(!childNameSE.equals(pinKey))) {
                         EditStartAndEnd(dataSnapshot);
 
+                        Log.d("Look at me", pinKey);
+
                         int place = weatherPins.indexOf(pinKey);
                         weatherPins.remove(place);
+                        pressures.remove(place);
+                        latitudes.remove(place);
+                        longitudes.remove(place);
+                        temperatures.remove(place);
                         times.remove(place);
-
-                        Marker toDelete = mapMarkers.get(place);
-                        mapMarkers.remove(place);
-                        toDelete.remove();
+                        weatherConditions.remove(place);
                     }
 
                     if (((!weatherPins.contains(pinKey)))&&(!childNameSE.equals(pinKey))) {
@@ -414,15 +416,21 @@ public class MainActivity extends AppCompatActivity{
             if (outOfDate == false) {
 
                 weatherPins.add(dataSnapshot.getKey());
+                pressures.add(pressure);
+                latitudes.add(latitude);
+                longitudes.add(longitude);
+                temperatures.add(temperature);
                 times.add(time);
+                weatherConditions.add(weatherCondition);
 
                 Log.d("Weather Pins", "Below is the weather pin List for: " + dataSnapshot.getKey());
                 Log.d("Weather Pin", weatherPins.get(weatherPins.size() - 1));
+                Log.d("Pressure", "" + pressures.get(weatherPins.size() - 1));
+                Log.d("Lat", "" + latitudes.get(weatherPins.size() - 1));
+                Log.d("Long", "" + longitudes.get(weatherPins.size() - 1));
+                Log.d("Temperature", "" + temperatures.get(weatherPins.size() - 1));
                 Log.d("Time", "" + times.get(weatherPins.size() - 1).toString());
-
-                MapsActivity map = MapsActivity.getInstance();
-                Marker tempMarker = map.AddMapMarker(latitude, longitude, pressure, temperature, weatherCondition, time.toString());
-                mapMarkers.add(tempMarker);
+                Log.d("Weather Condition", weatherConditions.get(weatherPins.size() - 1));
 
             } else if (outOfDate == true) {
                 if (!childNameSE.equals(dataSnapshot.getKey())) {
