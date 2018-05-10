@@ -174,7 +174,6 @@ public class MainActivity extends AppCompatActivity{
         //Below will be the collection of weather pins
         List<String> weatherPins = new ArrayList<>();
         List<java.util.Date> times = new ArrayList<>();
-        List<Marker> mapMarkers = new ArrayList<>();
 
         int start = -1;
         private String startname = "Start";
@@ -208,7 +207,7 @@ public class MainActivity extends AppCompatActivity{
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-
+            Intent mapIntent = new Intent(getActivity(), MapsActivity.class);
             mWeatherDatabase = FirebaseDatabase.getInstance().getReference();
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER))
@@ -240,11 +239,11 @@ public class MainActivity extends AppCompatActivity{
                     m_buttonGetLocation.setOnClickListener(this);
                     m_buttonGetPressure.setOnClickListener(this);
                     m_buttonGetTemperature.setOnClickListener(this);
-
                     break;
 
                 case 2:
                     rootView = inflater.inflate(R.layout.activity_maps, container, false);
+                    startActivity(mapIntent);
                     break;
 
                 case 3:
@@ -253,7 +252,6 @@ public class MainActivity extends AppCompatActivity{
                     Button button_firebaseSendTest = (Button) rootView.findViewById(R.id.button_testsend);
 
                     button_firebaseSendTest.setOnClickListener(this);
-
                     break;
             }
 
@@ -289,9 +287,7 @@ public class MainActivity extends AppCompatActivity{
                         weatherPins.remove(place);
                         times.remove(place);
 
-                        Marker toDelete = mapMarkers.get(place);
-                        mapMarkers.remove(place);
-                        toDelete.remove();
+                        MapsActivity.RemoveMarkerData(place);
                     }
 
                     if (((!weatherPins.contains(pinKey)))&&(!childNameSE.equals(pinKey))) {
@@ -416,13 +412,7 @@ public class MainActivity extends AppCompatActivity{
                 weatherPins.add(dataSnapshot.getKey());
                 times.add(time);
 
-                Log.d("Weather Pins", "Below is the weather pin List for: " + dataSnapshot.getKey());
-                Log.d("Weather Pin", weatherPins.get(weatherPins.size() - 1));
-                Log.d("Time", "" + times.get(weatherPins.size() - 1).toString());
-
-                MapsActivity map = MapsActivity.getInstance();
-                Marker tempMarker = map.AddMapMarker(latitude, longitude, pressure, temperature, weatherCondition, time.toString());
-                mapMarkers.add(tempMarker);
+                MapsActivity.AddMarkerData(latitude, longitude, pressure, temperature, weatherCondition, time.toString());
 
             } else if (outOfDate == true) {
                 if (!childNameSE.equals(dataSnapshot.getKey())) {

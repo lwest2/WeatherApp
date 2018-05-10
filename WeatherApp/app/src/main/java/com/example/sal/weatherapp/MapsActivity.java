@@ -3,6 +3,8 @@ package com.example.sal.weatherapp;
 import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -12,6 +14,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -21,7 +25,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GPSTracker gpsTracker;
     private Location mLocation;
     double latitude, longitude;
-    static MapsActivity instance;
+
+    private static List<Double> m_Lats = new ArrayList<>();
+    private static List<Double> m_Longs = new ArrayList<>();
+    private static List<Double> m_Pressures = new ArrayList<>();
+    private static List<Double> m_Temps = new ArrayList<>();
+    private static List<String> m_Conditions = new ArrayList<>();
+    private static List<String> m_Times = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,19 +46,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         longitude = mLocation.getLongitude();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        instance = this;
     }
 
-    public static MapsActivity getInstance()
+    public static void AddMarkerData(Double _lat, Double _long, Double _pressure, Double _temp, String _condition, String _time)
     {
-        return instance;
+        m_Lats.add(_lat);
+        m_Longs.add(_long);
+        m_Pressures.add(_pressure);
+        m_Temps.add(_temp);
+        m_Conditions.add(_condition);
+        m_Times.add(_time);
     }
 
-
+    public static void RemoveMarkerData(int pointer)
+    {
+        m_Lats.remove(pointer);
+        m_Longs.remove(pointer);
+        m_Pressures.remove(pointer);
+        m_Temps.remove(pointer);
+        m_Conditions.remove(pointer);
+        m_Times.remove(pointer);
+    }
 
     /**
      * Manipulates the map once available.
@@ -66,29 +86,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Add a marker in Sydney and move the camera
         LatLng currentPosition = new LatLng(latitude, longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentPosition));
+
+        Log.d("Got into On Map Ready", "stuff");
+
+        SetupMarkers();
     }
 
-    public Marker AddMapMarker(double _lat, double _long, double _pressure, double _temp, String _condition, String _time)
+    private void SetupMarkers()
     {
-        Marker returnMarker = null;
+        Log.d("num of markers", ""+ m_Lats.size());
+        for (int i = 0; i < m_Lats.size(); i++)
+        {
+            AddMapMarker(m_Lats.get(i),m_Longs.get(i),m_Pressures.get(i),m_Temps.get(i),m_Conditions.get(i),m_Times.get(i));
+        }
+    }
+
+    private void AddMapMarker(Double _lat, Double _long, Double _pressure, Double _temp, String _condition, String _time)
+    {
+        Log.d("Got in to add marker", "yay?");
+        Marker marker;
 
         if ((_temp == 9999.9999) && (_pressure == 9999.9999))
         {
-            returnMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).snippet("Weather Condition: " + _condition).snippet("Time: " + _time));
+            marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Time: " + _time));
         }
         else {
             if (_temp == 9999.9999) {
-                returnMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).snippet("Weather Condition: " + _condition).snippet("Pressure: " + _pressure).snippet("Time: " + _time));
+                marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Pressure: " + _pressure+ " Time: " + _time));
             } else if (_pressure == 9999.9999){
-                returnMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).snippet("Weather Condition: " + _condition).snippet("Temperature: " + _temp).snippet("Time: " + _time));
+                marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Temperature: " + _temp+ " Time: " + _time));
             }
             else
             {
-                returnMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).snippet("Weather Condition: " + _condition).snippet("Temperature: " + _temp).snippet("Pressure: " + _pressure).snippet("Time: " + _time));
+                marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Temperature: " + _temp+ " Pressure: " + _pressure+ " Time: " + _time));
             }
         }
-
-        return returnMarker;
     }
 
 }
