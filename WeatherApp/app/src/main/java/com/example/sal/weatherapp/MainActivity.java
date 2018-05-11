@@ -43,7 +43,13 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -77,6 +83,7 @@ public class MainActivity extends AppCompatActivity{
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    public SupportMapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +96,8 @@ public class MainActivity extends AppCompatActivity{
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -146,7 +155,7 @@ public class MainActivity extends AppCompatActivity{
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment implements View.OnClickListener, SensorEventListener {
+    public static class PlaceholderFragment extends Fragment implements View.OnClickListener, SensorEventListener, OnMapReadyCallback {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -204,10 +213,13 @@ public class MainActivity extends AppCompatActivity{
         private Sensor m_pressure;
         private float m_bioPressure;
 
+        private GoogleMap mMap;
+        private SupportMapFragment mapFragment;
+
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            Intent mapIntent = new Intent(getActivity(), MapsActivity.class);
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+            //Intent mapIntent = new Intent(getActivity(), MapsActivity.class);
             mWeatherDatabase = FirebaseDatabase.getInstance().getReference();
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER))
@@ -242,8 +254,16 @@ public class MainActivity extends AppCompatActivity{
                     break;
 
                 case 2:
+                    mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
+                    if (mapFragment == null) {
+                        mapFragment = SupportMapFragment.newInstance();
+                        getChildFragmentManager().beginTransaction().replace(R.id.map, mapFragment).commit();
+                    }
+
+                    mapFragment.getMapAsync(this);
+
                     rootView = inflater.inflate(R.layout.activity_maps, container, false);
-                    startActivity(mapIntent);
                     break;
 
                 case 3:
@@ -554,6 +574,22 @@ public class MainActivity extends AppCompatActivity{
         @Override
         public void onAccuracyChanged(Sensor sensor, int i) {
             // do something if accuracy changes
+        }
+
+        @Override
+        public void onMapReady(GoogleMap googleMap) {
+            mMap = googleMap;
+
+            Log.d("Got in here"," yo ");
+
+            double longitude = 5;
+            double latitude = 5;
+            LatLng position = new LatLng(latitude, longitude);
+
+            Log.d("Got in here"," yo ");
+
+            mMap.addMarker(new MarkerOptions().position(position).title("Got a marker").snippet("Ye"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
         }
     }
 
