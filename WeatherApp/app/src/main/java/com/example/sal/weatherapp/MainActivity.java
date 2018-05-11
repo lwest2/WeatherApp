@@ -221,12 +221,19 @@ public class MainActivity extends AppCompatActivity{
 
         private GoogleMap mMap;
         private SupportMapFragment mapFragment;
+        private GPSTracker gpsTracker;
+        private Location mLocation;
+        double mlatitude, mlongitude;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-            //Intent mapIntent = new Intent(getActivity(), MapsActivity.class);
             mWeatherDatabase = FirebaseDatabase.getInstance().getReference();
+
+            gpsTracker = new GPSTracker(getActivity().getApplicationContext());
+            mLocation = gpsTracker.getLocation();
+            mlatitude = mLocation.getLatitude();
+            mlongitude = mLocation.getLongitude();
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER))
             {
@@ -586,12 +593,9 @@ public class MainActivity extends AppCompatActivity{
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
 
-            double longitude = 5;
-            double latitude = 5;
-            LatLng position = new LatLng(latitude, longitude);
+            LatLng position = new LatLng(mlatitude, mlongitude);
 
-            //mMap.addMarker(new MarkerOptions().position(position).title("Got a marker").snippet("Ye"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 8.0f));
 
             SetupMarkers();
         }
