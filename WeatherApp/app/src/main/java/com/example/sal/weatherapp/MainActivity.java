@@ -183,6 +183,12 @@ public class MainActivity extends AppCompatActivity{
         //Below will be the collection of weather pins
         List<String> weatherPins = new ArrayList<>();
         List<java.util.Date> times = new ArrayList<>();
+        private static List<Double> m_Lats = new ArrayList<>();
+        private static List<Double> m_Longs = new ArrayList<>();
+        private static List<Double> m_Pressures = new ArrayList<>();
+        private static List<Double> m_Temps = new ArrayList<>();
+        private static List<String> m_Conditions = new ArrayList<>();
+        private static List<String> m_Times = new ArrayList<>();
 
         int start = -1;
         private String startname = "Start";
@@ -307,7 +313,7 @@ public class MainActivity extends AppCompatActivity{
                         weatherPins.remove(place);
                         times.remove(place);
 
-                        MapsActivity.RemoveMarkerData(place);
+                        RemoveMarkerData(place);
                     }
 
                     if (((!weatherPins.contains(pinKey)))&&(!childNameSE.equals(pinKey))) {
@@ -432,7 +438,7 @@ public class MainActivity extends AppCompatActivity{
                 weatherPins.add(dataSnapshot.getKey());
                 times.add(time);
 
-                MapsActivity.AddMarkerData(latitude, longitude, pressure, temperature, weatherCondition, time.toString());
+                AddMarkerData(latitude, longitude, pressure, temperature, weatherCondition, time.toString());
 
             } else if (outOfDate == true) {
                 if (!childNameSE.equals(dataSnapshot.getKey())) {
@@ -580,17 +586,67 @@ public class MainActivity extends AppCompatActivity{
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
 
-            Log.d("Got in here"," yo ");
-
             double longitude = 5;
             double latitude = 5;
             LatLng position = new LatLng(latitude, longitude);
 
-            Log.d("Got in here"," yo ");
-
-            mMap.addMarker(new MarkerOptions().position(position).title("Got a marker").snippet("Ye"));
+            //mMap.addMarker(new MarkerOptions().position(position).title("Got a marker").snippet("Ye"));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+
+            SetupMarkers();
         }
+
+        public void AddMarkerData(Double _lat, Double _long, Double _pressure, Double _temp, String _condition, String _time)
+        {
+            m_Lats.add(_lat);
+            m_Longs.add(_long);
+            m_Pressures.add(_pressure);
+            m_Temps.add(_temp);
+            m_Conditions.add(_condition);
+            m_Times.add(_time);
+        }
+
+        public void RemoveMarkerData(int pointer)
+        {
+            m_Lats.remove(pointer);
+            m_Longs.remove(pointer);
+            m_Pressures.remove(pointer);
+            m_Temps.remove(pointer);
+            m_Conditions.remove(pointer);
+            m_Times.remove(pointer);
+        }
+
+        private void SetupMarkers()
+        {
+            Log.d("num of markers", ""+ m_Lats.size());
+            for (int i = 0; i < m_Lats.size(); i++)
+            {
+                AddMapMarker(m_Lats.get(i),m_Longs.get(i),m_Pressures.get(i),m_Temps.get(i),m_Conditions.get(i),m_Times.get(i));
+            }
+        }
+
+        private void AddMapMarker(Double _lat, Double _long, Double _pressure, Double _temp, String _condition, String _time)
+        {
+            Log.d("Got in to add marker", "yay?");
+            Marker marker;
+
+            if ((_temp == 9999.9999) && (_pressure == 9999.9999))
+            {
+                marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Time: " + _time));
+            }
+            else {
+                if (_temp == 9999.9999) {
+                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Pressure: " + _pressure+ " Time: " + _time));
+                } else if (_pressure == 9999.9999){
+                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Temperature: " + _temp+ " Time: " + _time));
+                }
+                else
+                {
+                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Temperature: " + _temp+ " Pressure: " + _pressure+ " Time: " + _time));
+                }
+            }
+        }
+
     }
 
     /**
