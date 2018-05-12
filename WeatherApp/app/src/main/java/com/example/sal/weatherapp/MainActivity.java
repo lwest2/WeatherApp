@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -38,6 +39,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -155,7 +158,7 @@ public class MainActivity extends AppCompatActivity{
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment implements View.OnClickListener, SensorEventListener, OnMapReadyCallback {
+    public static class PlaceholderFragment extends Fragment implements View.OnClickListener, SensorEventListener, OnMapReadyCallback{
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -279,13 +282,13 @@ public class MainActivity extends AppCompatActivity{
                     rootView = inflater.inflate(R.layout.activity_maps, container, false);
                     break;
 
-                case 3:
-                    rootView = inflater.inflate(R.layout.fragment_firebasetest, container, false);
+                //case 3:
+                   // rootView = inflater.inflate(R.layout.fragment_firebasetest, container, false);
 
-                    Button button_firebaseSendTest = (Button) rootView.findViewById(R.id.button_testsend);
+                    //Button button_firebaseSendTest = (Button) rootView.findViewById(R.id.button_testsend);
 
-                    button_firebaseSendTest.setOnClickListener(this);
-                    break;
+                    //button_firebaseSendTest.setOnClickListener(this);
+                    //break;
             }
 
             mWeatherDatabase.addChildEventListener(new ChildEventListener() {
@@ -362,9 +365,6 @@ public class MainActivity extends AppCompatActivity{
         public void onClick(View view) {
             switch(view.getId())
             {
-                case R.id.button_testsend:
-                    Log.d("Test Send Button", "Un-needed");
-                    break;
 		        case R.id.buttonGetLocation:
                     // code to set location
                     GetLocation();
@@ -596,6 +596,7 @@ public class MainActivity extends AppCompatActivity{
             LatLng position = new LatLng(mlatitude, mlongitude);
 
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 8.0f));
+            mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getContext()));
 
             SetupMarkers();
         }
@@ -640,13 +641,13 @@ public class MainActivity extends AppCompatActivity{
             }
             else {
                 if (_temp == 9999.9999) {
-                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Pressure: " + _pressure+ " Time: " + _time));
+                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Pressure: " + _pressure+ "\n"+ "Time: " + _time));
                 } else if (_pressure == 9999.9999){
-                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Temperature: " + _temp+ " Time: " + _time));
+                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Temperature: " + _temp+ "\n"+ "Time: " + _time));
                 }
                 else
                 {
-                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Temperature: " + _temp+ " Pressure: " + _pressure+ " Time: " + _time));
+                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Temperature: " + _temp+ "\n"+ "Pressure: " + _pressure+ "\n"+ "Time: " + _time));
                 }
             }
         }
@@ -673,7 +674,7 @@ public class MainActivity extends AppCompatActivity{
         @Override
         public int getCount() {
             // Show 2 total pages.
-            return 3;
+            return 2;
         }
     }
 }
