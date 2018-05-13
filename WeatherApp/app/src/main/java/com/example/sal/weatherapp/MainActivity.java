@@ -179,9 +179,9 @@ public class MainActivity extends AppCompatActivity {
         private String childNameSE = "Adding";
 
         View rootView;
-        private Button m_buttonGetTemperature;
-        private Button m_buttonGetPressure;
-        private Button m_buttonGetLocation;
+        //private Button m_buttonGetTemperature;
+        //private Button m_buttonGetPressure;
+        //private Button m_buttonGetLocation;
         private Button m_buttonSubmit;
         private Button m_buttonGetData;
 
