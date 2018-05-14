@@ -18,11 +18,18 @@
     <string name="_0">0</string>
     <string name="Celsius">Celsius</string>
     <string name="NoTemperature">Unable to find temperature.</string>
-    <string name="NoPressure">Unable to find pressure.</string>
+    <string name="NoPressure">Unable to find pressure</string>
     <string name="NoLongitude">Unable to find location</string>
     <string name="NoLatitude">Unable to find location</string>
     <string name="mb">mb</string>
+    <string name="upload_and_view_local_weather">Upload and view local weather.</string>
+    <string name="weather_watch">Weather Watch</string>
+    <string name="upload_and_view_your_local_weather">Upload and view your local weather.</string>
+    <string name="n_a">N/A</string>
+    <string name="get_data">Get Data</string>
+    <string name="upload">Upload</string>
     <string-array name="weather_array">
+        <item></item>
         <item>Sunny</item>
         <item>Cloudy</item>
         <item>Windy</item>

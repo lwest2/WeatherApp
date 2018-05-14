@@ -2,10 +2,13 @@ package com.example.sal.weatherapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,6 +17,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Debug;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -35,10 +39,23 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
+
+<<<<<<< HEAD
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+=======
+>>>>>>> origin/uiUpdate
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,13 +67,13 @@ import java.text.DecimalFormat;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -72,6 +89,7 @@ public class MainActivity extends AppCompatActivity{
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    public SupportMapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +102,8 @@ public class MainActivity extends AppCompatActivity{
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -123,14 +143,10 @@ public class MainActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    public static boolean hasPermissions(Context context, String... permissions)
-    {
-        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M && context != null && permissions != null)
-        {
-            for (String permission: permissions)
-            {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED)
-                {
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                     return false;
                 }
             }
@@ -141,7 +157,7 @@ public class MainActivity extends AppCompatActivity{
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment implements View.OnClickListener, SensorEventListener {
+    public static class PlaceholderFragment extends Fragment implements View.OnClickListener, SensorEventListener, OnMapReadyCallback{
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -168,12 +184,13 @@ public class MainActivity extends AppCompatActivity{
 
         //Below will be the collection of weather pins
         List<String> weatherPins = new ArrayList<>();
-        List<Double> pressures = new ArrayList<>();
-        List<Double> latitudes = new ArrayList<>();
-        List<Double> longitudes = new ArrayList<>();
-        List<Double> temperatures = new ArrayList<>();
         List<java.util.Date> times = new ArrayList<>();
-        List<String> weatherConditions = new ArrayList<>();
+        private static List<Double> m_Lats = new ArrayList<>();
+        private static List<Double> m_Longs = new ArrayList<>();
+        private static List<Double> m_Pressures = new ArrayList<>();
+        private static List<Double> m_Temps = new ArrayList<>();
+        private static List<String> m_Conditions = new ArrayList<>();
+        private static List<String> m_Times = new ArrayList<>();
 
         int start = -1;
         private String startname = "Start";
@@ -182,10 +199,11 @@ public class MainActivity extends AppCompatActivity{
         private String childNameSE = "Adding";
 
         View rootView;
-        private Button m_buttonGetTemperature;
-        private Button m_buttonGetPressure;
-        private Button m_buttonGetLocation;
+        //private Button m_buttonGetTemperature;
+        //private Button m_buttonGetPressure;
+        //private Button m_buttonGetLocation;
         private Button m_buttonSubmit;
+        private Button m_buttonGetData;
 
         private Spinner m_spinnerGetWeather;
 
@@ -195,6 +213,8 @@ public class MainActivity extends AppCompatActivity{
         private TextView m_textViewLongitudeOutput;
 
         private LocationManager m_locationManager;
+        private double latitudeGetLoc;
+        private double longitudeGetLoc;
 
         private static final int REQUEST_LOCATION = 1;
 
@@ -204,21 +224,38 @@ public class MainActivity extends AppCompatActivity{
         private Sensor m_pressure;
         private float m_bioPressure;
 
+        private GoogleMap mMap;
+        private SupportMapFragment mapFragment;
+        private GPSTracker gpsTracker;
+        private Location mLocation;
+        double mlatitude, mlongitude;
+
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
             mWeatherDatabase = FirebaseDatabase.getInstance().getReference();
 
+<<<<<<< HEAD
+            gpsTracker = new GPSTracker(getActivity().getApplicationContext());
+            mLocation = gpsTracker.getLocation();
+            mlatitude = mLocation.getLatitude();
+            mlongitude = mLocation.getLongitude();
+
             switch (getArguments().getInt(ARG_SECTION_NUMBER))
             {
+=======
+            switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
+>>>>>>> origin/uiUpdate
                 case 1:
                     rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+                    /*
                     m_buttonGetTemperature = (Button) rootView.findViewById(R.id.buttonGetTemparture);
                     m_buttonGetPressure = (Button) rootView.findViewById(R.id.buttonGetPressure);
                     m_buttonGetLocation = (Button) rootView.findViewById(R.id.buttonGetLocation);
+                    */
                     m_buttonSubmit = (Button) rootView.findViewById(R.id.buttonSubmit);
+                    m_buttonGetData = (Button) rootView.findViewById(R.id.getData);
 
                     m_spinnerGetWeather = (Spinner) rootView.findViewById(R.id.spinnerGetWeather);
 
@@ -234,26 +271,62 @@ public class MainActivity extends AppCompatActivity{
 
                     m_sensorManager.registerListener(this, m_temperature, SensorManager.SENSOR_DELAY_NORMAL);
                     m_sensorManager.registerListener(this, m_pressure, SensorManager.SENSOR_DELAY_NORMAL);
+                    LocationListener locationListener = new LocationListener() {
+                        @Override
+                        public void onLocationChanged(Location location) {
+                            longitudeGetLoc = location.getLongitude();
+                            latitudeGetLoc = location.getLatitude();
+                        }
 
+                        @Override
+                        public void onStatusChanged(String s, int i, Bundle bundle) { }
+
+                        @Override
+                        public void onProviderEnabled(String s) { }
+
+                        @Override
+                        public void onProviderDisabled(String s) { }
+                    };
+
+                    if(ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                            && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+                    } else {
+                        m_locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, locationListener);
+                    }
+
+                    m_buttonGetData.setOnClickListener(this);
                     m_buttonSubmit.setOnClickListener(this);
+                    /*
                     m_buttonGetLocation.setOnClickListener(this);
                     m_buttonGetPressure.setOnClickListener(this);
                     m_buttonGetTemperature.setOnClickListener(this);
-
+<<<<<<< HEAD
+=======
+                    */
+>>>>>>> origin/uiUpdate
                     break;
 
                 case 2:
-                    rootView = inflater.inflate(R.layout.fragment_mapview, container, false);
+                    mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
+                    if (mapFragment == null) {
+                        mapFragment = SupportMapFragment.newInstance();
+                        getChildFragmentManager().beginTransaction().replace(R.id.map, mapFragment).commit();
+                    }
+
+                    mapFragment.getMapAsync(this);
+
+                    rootView = inflater.inflate(R.layout.activity_maps, container, false);
                     break;
 
-                case 3:
-                    rootView = inflater.inflate(R.layout.fragment_firebasetest, container, false);
+                //case 3:
+                   // rootView = inflater.inflate(R.layout.fragment_firebasetest, container, false);
 
-                    Button button_firebaseSendTest = (Button) rootView.findViewById(R.id.button_testsend);
+                    //Button button_firebaseSendTest = (Button) rootView.findViewById(R.id.button_testsend);
 
-                    button_firebaseSendTest.setOnClickListener(this);
-
-                    break;
+                    //button_firebaseSendTest.setOnClickListener(this);
+                    //break;
             }
 
             mWeatherDatabase.addChildEventListener(new ChildEventListener() {
@@ -261,23 +334,20 @@ public class MainActivity extends AppCompatActivity{
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     String pinKey = dataSnapshot.getKey();
 
-                    if ((!(weatherPins.contains(pinKey)))&&(!childNameSE.equals(pinKey))) {
-                        EditStartAndEnd(dataSnapshot);
-
-                        weatherPins.add(pinKey);
-                        updateLists(dataSnapshot);
-                    }
-
                     if (childNameSE.equals(pinKey))
                     {
                         start = Integer.parseInt(dataSnapshot.child(startname).getValue().toString());
                         end = Integer.parseInt(dataSnapshot.child(endname).getValue().toString());
                     }
+
+                    if ((!(weatherPins.contains(pinKey)))&&(!childNameSE.equals(pinKey))) {
+                        EditStartAndEnd(dataSnapshot);
+                        updateLists(dataSnapshot);
+                    }
                 }
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    updateLists(dataSnapshot);
                 }
 
                 @Override
@@ -289,15 +359,15 @@ public class MainActivity extends AppCompatActivity{
 
                         int place = weatherPins.indexOf(pinKey);
                         weatherPins.remove(place);
-                        pressures.remove(place);
-                        latitudes.remove(place);
-                        longitudes.remove(place);
-                        temperatures.remove(place);
                         times.remove(place);
-                        weatherConditions.remove(place);
 
+                        RemoveMarkerData(place);
+                    }
+
+                    if (((!weatherPins.contains(pinKey)))&&(!childNameSE.equals(pinKey))) {
                         updateLists(dataSnapshot);
                     }
+
                 }
 
                 @Override
@@ -333,9 +403,13 @@ public class MainActivity extends AppCompatActivity{
         public void onClick(View view) {
             switch(view.getId())
             {
+<<<<<<< HEAD
+=======
                 case R.id.button_testsend:
-                    SendFirebase();
+                    Log.d("Test Send Button", "Un-needed");
                     break;
+                    /*
+>>>>>>> origin/uiUpdate
 		        case R.id.buttonGetLocation:
                     // code to set location
                     GetLocation();
@@ -350,10 +424,40 @@ public class MainActivity extends AppCompatActivity{
                     // code to set pressure
                     GetPressure();
                     break;
+                    */
 
                 case R.id.buttonSubmit:
                     // code to submit
-                    Submit();
+                    // POPUP : ARE YOU SURE? Y / N?
+
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            switch(i)
+                            {
+                                case DialogInterface.BUTTON_NEGATIVE:
+
+                                    break;
+
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    Submit();
+                                    break;
+                            }
+                        }
+                    };
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("Are you sure you want to submit your weather report?")
+                            .setPositiveButton("Yes", dialogClickListener)
+                            .setNegativeButton("No", dialogClickListener);
+                    builder.create();
+                    builder.show();
+                    break;
+
+                case R.id.getData:
+                    GetLocation();
+                    GetTemperature();
+                    GetPressure();
                     break;
             }
         }
@@ -413,21 +517,11 @@ public class MainActivity extends AppCompatActivity{
 
             if (outOfDate == false) {
 
-                pressures.add(pressure);
-                latitudes.add(latitude);
-                longitudes.add(longitude);
-                temperatures.add(temperature);
+                weatherPins.add(dataSnapshot.getKey());
                 times.add(time);
-                weatherConditions.add(weatherCondition);
 
-                Log.d("Weather Pins", "Below is the weather pin List for: " + dataSnapshot.getKey());
-                Log.d("Weather Pin", weatherPins.get(weatherPins.size() - 1));
-                Log.d("Pressure", "" + pressures.get(weatherPins.size() - 1));
-                Log.d("Lat", "" + latitudes.get(weatherPins.size() - 1));
-                Log.d("Long", "" + longitudes.get(weatherPins.size() - 1));
-                Log.d("Temperature", "" + temperatures.get(weatherPins.size() - 1));
-                Log.d("Time", "" + times.get(weatherPins.size() - 1).toString());
-                Log.d("Weather Condition", weatherConditions.get(weatherPins.size() - 1));
+                AddMarkerData(latitude, longitude, pressure, temperature, weatherCondition, time.toString());
+
             } else if (outOfDate == true) {
                 if (!childNameSE.equals(dataSnapshot.getKey())) {
                     mWeatherDatabase.child(dataSnapshot.getKey()).removeValue();
@@ -450,20 +544,30 @@ public class MainActivity extends AppCompatActivity{
                     outOfDate = false;
                 }
             }
+		return outOfDate;
+	}
 
-            return outOfDate;
-        }
-
-<<<<<<< HEAD
         public void SendFirebase(String pressureString, String latString, String longString, String tempString, String conditionString){
-            //int currentPin = mWeatherDatabase.child("NumPins");
-            String testPinName = "TestPin";
+            
+	        String pinName = "Pin";
 
-            mWeatherDatabase.child(testPinName).child("Barometer").setValue(pressureString);
-            mWeatherDatabase.child(testPinName).child("Lat").setValue(latString);
-            mWeatherDatabase.child(testPinName).child("Long").setValue(longString);
-            mWeatherDatabase.child(testPinName).child("Temperature").setValue(tempString);
-            mWeatherDatabase.child(testPinName).child("Weather").setValue(conditionString);
+            if (start == end)
+            {
+                pinName = pinName + weatherPins.size();
+            }
+            else
+            {
+                pinName = pinName + start;
+                start = start + 1;
+                mWeatherDatabase.child(childNameSE).child(startname).setValue(start);
+            }
+
+            mWeatherDatabase.child(pinName).child("Time").setValue(Calendar.getInstance().getTime().toString());
+            mWeatherDatabase.child(pinName).child("Barometer").setValue(pressureString);
+            mWeatherDatabase.child(pinName).child("Lat").setValue(latString);
+            mWeatherDatabase.child(pinName).child("Long").setValue(longString);
+            mWeatherDatabase.child(pinName).child("Temperature").setValue(tempString);
+            mWeatherDatabase.child(pinName).child("Weather").setValue(conditionString);
         }
 
 	    private void GetLocation() {
@@ -477,40 +581,16 @@ public class MainActivity extends AppCompatActivity{
 
                 if (location != null)
                 {
-                    double longitude = location.getLongitude();
-                    double latitude = location.getLatitude();
+                    longitudeGetLoc = location.getLongitude();
+                    latitudeGetLoc = location.getLatitude();
 
-                    m_textViewLongitudeOutput.setText(Double.toString(longitude));
-                    m_textViewLatitudeOutput.setText(Double.toString(latitude));
+                    m_textViewLongitudeOutput.setText(Double.toString(longitudeGetLoc));
+                    m_textViewLatitudeOutput.setText(Double.toString(latitudeGetLoc));
                 } else {
                     m_textViewLongitudeOutput.setText(R.string.NoLongitude);
                     m_textViewLatitudeOutput.setText(R.string.NoLatitude);
                 }
             }
-=======
-        public void SendFirebase(){
-            String pinName = "Pin";
-
-            if (start == end)
-            {
-                pinName = pinName + weatherPins.size();
-            }
-            else
-            {
-                pinName = pinName + start;
-                start = start + 1;
-                mWeatherDatabase.child(childNameSE).child(startname).setValue(start);
-            }
-
-            Log.d("pinName", pinName);
-
-            mWeatherDatabase.child(pinName).child("Time").setValue(Calendar.getInstance().getTime().toString());
-            mWeatherDatabase.child(pinName).child("Barometer").setValue("test");
-            mWeatherDatabase.child(pinName).child("Lat").setValue("test");
-            mWeatherDatabase.child(pinName).child("Long").setValue("test");
-            mWeatherDatabase.child(pinName).child("Temperature").setValue("test");
-            mWeatherDatabase.child(pinName).child("Weather").setValue("test");
->>>>>>> origin/firebaseDeleteAfterXTime
         }
 
         private void GetTemperature() {
@@ -547,14 +627,40 @@ public class MainActivity extends AppCompatActivity{
             String latitude = m_textViewLatitudeOutput.getText().toString();
             String longitude = m_textViewLongitudeOutput.getText().toString();
 
-            m_textViewTemperatureOutput.setText(R.string._0);
-            m_textViewPressureOutput.setText(R.string._0);
+            m_textViewTemperatureOutput.setText(getResources().getString(R.string.n_a));
+            m_textViewPressureOutput.setText(getResources().getString(R.string.n_a));
             m_spinnerGetWeather.setSelection(0);
-            m_textViewLatitudeOutput.setText(R.string._0);
-            m_textViewLongitudeOutput.setText(R.string._0);
+            m_textViewLatitudeOutput.setText(getResources().getString(R.string.n_a));
+            m_textViewLongitudeOutput.setText(getResources().getString(R.string.n_a));
 
             Log.i("Output: ", temperature + " " + pressure + " " + weatherCondition + " " + latitude + " " + longitude);
-            SendFirebase(pressure, latitude, longitude, temperature, weatherCondition);
+            if (!weatherCondition.equalsIgnoreCase("") && !longitude.equalsIgnoreCase("Unable to find location") && !latitude.equalsIgnoreCase("Unable to find location")) {
+                SendFirebase(pressure, latitude, longitude, temperature, weatherCondition);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Uploaded.")
+                        .setMessage("Your weather report has been submitted.")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        });
+                builder.create();
+                builder.show();
+            } else
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Missing Data.")
+                        .setMessage("Requires at least weather condition and location to submit.")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        });
+                builder.create();
+                builder.show();
+            }
         }
 
         public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
@@ -583,6 +689,70 @@ public class MainActivity extends AppCompatActivity{
         public void onAccuracyChanged(Sensor sensor, int i) {
             // do something if accuracy changes
         }
+
+        @Override
+        public void onMapReady(GoogleMap googleMap) {
+            mMap = googleMap;
+
+            LatLng position = new LatLng(mlatitude, mlongitude);
+
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 8.0f));
+            mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(getContext()));
+
+            SetupMarkers();
+        }
+
+        public void AddMarkerData(Double _lat, Double _long, Double _pressure, Double _temp, String _condition, String _time)
+        {
+            m_Lats.add(_lat);
+            m_Longs.add(_long);
+            m_Pressures.add(_pressure);
+            m_Temps.add(_temp);
+            m_Conditions.add(_condition);
+            m_Times.add(_time);
+        }
+
+        public void RemoveMarkerData(int pointer)
+        {
+            m_Lats.remove(pointer);
+            m_Longs.remove(pointer);
+            m_Pressures.remove(pointer);
+            m_Temps.remove(pointer);
+            m_Conditions.remove(pointer);
+            m_Times.remove(pointer);
+        }
+
+        private void SetupMarkers()
+        {
+            Log.d("num of markers", ""+ m_Lats.size());
+            for (int i = 0; i < m_Lats.size(); i++)
+            {
+                AddMapMarker(m_Lats.get(i),m_Longs.get(i),m_Pressures.get(i),m_Temps.get(i),m_Conditions.get(i),m_Times.get(i));
+            }
+        }
+
+        private void AddMapMarker(Double _lat, Double _long, Double _pressure, Double _temp, String _condition, String _time)
+        {
+            Log.d("Got in to add marker", "yay?");
+            Marker marker;
+
+            if ((_temp == 9999.9999) && (_pressure == 9999.9999))
+            {
+                marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Time: " + _time));
+            }
+            else {
+                if (_temp == 9999.9999) {
+                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Pressure: " + _pressure+ "\n"+ "Time: " + _time));
+                } else if (_pressure == 9999.9999){
+                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Temperature: " + _temp+ "\n"+ "Time: " + _time));
+                }
+                else
+                {
+                    marker = mMap.addMarker(new MarkerOptions().position(new LatLng(_lat, _long)).title("Weather Condition: " + _condition).snippet("Temperature: " + _temp+ "\n"+ "Pressure: " + _pressure+ "\n"+ "Time: " + _time));
+                }
+            }
+        }
+
     }
 
     /**
@@ -605,7 +775,7 @@ public class MainActivity extends AppCompatActivity{
         @Override
         public int getCount() {
             // Show 2 total pages.
-            return 3;
+            return 2;
         }
     }
 }
