@@ -69,6 +69,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -192,12 +193,6 @@ public class MainActivity extends AppCompatActivity{
         private static List<Double> m_Temps = new ArrayList<>();
         private static List<String> m_Conditions = new ArrayList<>();
         private static List<String> m_Times = new ArrayList<>();
-
-        int start = -1;
-        private String startname = "Start";
-        int end = -1;
-        private String endname = "End";
-        private String childNameSE = "Adding";
 
         View rootView;
         //private Button m_buttonGetTemperature;
@@ -328,14 +323,7 @@ public class MainActivity extends AppCompatActivity{
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     String pinKey = dataSnapshot.getKey();
 
-                    if (childNameSE.equals(pinKey))
-                    {
-                        start = Integer.parseInt(dataSnapshot.child(startname).getValue().toString());
-                        end = Integer.parseInt(dataSnapshot.child(endname).getValue().toString());
-                    }
-
-                    if ((!(weatherPins.contains(pinKey)))&&(!childNameSE.equals(pinKey))) {
-                        EditStartAndEnd(dataSnapshot);
+                    if (!(weatherPins.contains(pinKey))) {
                         updateLists(dataSnapshot);
                     }
                 }
@@ -348,9 +336,7 @@ public class MainActivity extends AppCompatActivity{
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
                     String pinKey = dataSnapshot.getKey();
 
-                    if ((weatherPins.contains(pinKey))&&(!childNameSE.equals(pinKey))) {
-                        EditStartAndEnd(dataSnapshot);
-
+                    if ((weatherPins.contains(pinKey))) {
                         int place = weatherPins.indexOf(pinKey);
                         weatherPins.remove(place);
                         times.remove(place);
@@ -358,7 +344,8 @@ public class MainActivity extends AppCompatActivity{
                         RemoveMarkerData(place);
                     }
 
-                    if (((!weatherPins.contains(pinKey)))&&(!childNameSE.equals(pinKey))) {
+
+                    if (((!weatherPins.contains(pinKey)))) {
                         updateLists(dataSnapshot);
                     }
 
@@ -376,21 +363,6 @@ public class MainActivity extends AppCompatActivity{
             });
 
             return rootView;
-        }
-
-        public void EditStartAndEnd(DataSnapshot dataSnapshot) {
-            String[] splitString = dataSnapshot.getKey().split("n");
-            int newPointer = Integer.parseInt(splitString[1]);
-
-            if ((newPointer + 1) < start) {
-                    start = newPointer + 1;
-            }
-            else if ((newPointer < end) && (newPointer > start)) {
-                    end = newPointer;
-            }
-
-            mWeatherDatabase.child(childNameSE).child(endname).setValue(end);
-            mWeatherDatabase.child(childNameSE).child(startname).setValue(start);
         }
 
         @Override
@@ -511,9 +483,7 @@ public class MainActivity extends AppCompatActivity{
                 AddMarkerData(latitude, longitude, pressure, temperature, weatherCondition, time.toString());
 
             } else if (outOfDate == true) {
-                if (!childNameSE.equals(dataSnapshot.getKey())) {
-                    mWeatherDatabase.child(dataSnapshot.getKey()).removeValue();
-                }
+                mWeatherDatabase.child(dataSnapshot.getKey()).removeValue();
             }
         }
 
@@ -538,19 +508,11 @@ public class MainActivity extends AppCompatActivity{
         public void SendFirebase(String pressureString, String latString, String longString, String tempString, String conditionString){
             
 	        String pinName = "Pin";
+            String time = Calendar.getInstance().getTime().toString();
 
-            if (start == end)
-            {
-                pinName = pinName + weatherPins.size();
-            }
-            else
-            {
-                pinName = pinName + start;
-                start = start + 1;
-                mWeatherDatabase.child(childNameSE).child(startname).setValue(start);
-            }
+            pinName = pinName + pressureString.hashCode() + latString.hashCode() + longString.hashCode() + tempString.hashCode() + conditionString.hashCode() + time.hashCode();
 
-            mWeatherDatabase.child(pinName).child("Time").setValue(Calendar.getInstance().getTime().toString());
+            mWeatherDatabase.child(pinName).child("Time").setValue(time);
             mWeatherDatabase.child(pinName).child("Barometer").setValue(pressureString);
             mWeatherDatabase.child(pinName).child("Lat").setValue(latString);
             mWeatherDatabase.child(pinName).child("Long").setValue(longString);
