@@ -1,5 +1,7 @@
 package com.example.sal.weatherapp;
 
+import android.os.Bundle;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -12,6 +14,7 @@ public class PlaceholderFragmentTest {
     // Edit: Some tests might be missing. Need to be added.
     @Test
     public void newInstance() throws Exception {
+
     }
 
     @Test
