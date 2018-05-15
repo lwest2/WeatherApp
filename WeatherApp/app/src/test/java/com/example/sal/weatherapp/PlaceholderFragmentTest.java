@@ -1,6 +1,8 @@
 package com.example.sal.weatherapp;
 
+
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import static org.junit.Assert.*;
 
@@ -10,6 +12,8 @@ import static org.junit.Assert.*;
 public class PlaceholderFragmentTest {
 
     // Edit: Some tests might be missing. Need to be added.
+
+
     @Test
     public void newInstance() throws Exception {
     }
@@ -24,6 +28,8 @@ public class PlaceholderFragmentTest {
 
     @Test
     public void onClick() throws Exception {
+        MainActivity mainActivity = Mockito.mock(MainActivity.class);
+        mainActivity.findViewById(R.id.buttonSubmit);
     }
 
     @Test
@@ -40,12 +46,16 @@ public class PlaceholderFragmentTest {
 
     @Test
     public void GetLocation() throws Exception {
-
     }
 
     @Test
-    public void GetTemperature() throws Exception {
+    public void GetTemperature() {
+        double temperature = 20.01313414;
+        double expected = 20.01;
+        double output = Math.round(temperature * 100.0) / 100.0;
+        double delta = 0.001;
 
+        assertEquals(expected, output, delta);
     }
 
     @Test
@@ -64,6 +74,7 @@ public class PlaceholderFragmentTest {
 
     @Test
     public void onSensorChanged() throws Exception {
+
     }
 
     @Test
