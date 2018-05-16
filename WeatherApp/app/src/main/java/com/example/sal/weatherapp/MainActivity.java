@@ -231,10 +231,21 @@ public class MainActivity extends AppCompatActivity{
 
             mWeatherDatabase = FirebaseDatabase.getInstance().getReference();
 
-            gpsTracker = new GPSTracker(getActivity().getApplicationContext());
-            mLocation = gpsTracker.getLocation();
-            mlatitude = mLocation.getLatitude();
-            mlongitude = mLocation.getLongitude();
+            if(ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this.getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+            }
+
+            try {
+                gpsTracker = new GPSTracker(getActivity().getApplicationContext());
+                mLocation = gpsTracker.getLocation();
+                mlatitude = mLocation.getLatitude();
+                mlongitude = mLocation.getLongitude();
+            }catch (NullPointerException ex)
+            {
+                mlatitude = 0;
+                mlongitude = 0;
+            }
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER))
             {
